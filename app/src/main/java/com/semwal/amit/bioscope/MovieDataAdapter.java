@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -22,15 +21,7 @@ public class MovieDataAdapter extends ArrayAdapter<MovieData> {
     public MovieDataAdapter(Context context) {
         super(context, 0);
     }
-    static class ViewHolder {
-        TextView title;
-        ImageView  posterImage;
 
-        public ViewHolder(View view){
-            title = (TextView) view.findViewById(R.id.grid_item_title);
-            posterImage = (ImageView) view.findViewById(R.id.grid_item_image);
-        }
-    }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
@@ -51,9 +42,15 @@ public class MovieDataAdapter extends ArrayAdapter<MovieData> {
                 .into(viewHolder.posterImage);
 
 
-        viewHolder.title.setText(movie.getTitle());
-
         return view;
+    }
+
+    static class ViewHolder {
+        ImageView posterImage;
+
+        public ViewHolder(View view) {
+            posterImage = (ImageView) view.findViewById(R.id.grid_item_image);
+        }
     }
 
 }

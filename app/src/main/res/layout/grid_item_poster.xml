@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="@dimen/grid_item_movie_height">
-
-    <TextView
-        android:id="@+id/grid_item_title"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textSize="18sp"
-        android:padding="5dp"
-        android:gravity="center|left"
-        android:ellipsize="end"
-        android:textColor="?android:attr/textColorSecondary" />
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/grid_item_image"
-        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:maxWidth="100dp"
+        android:scaleType="fitCenter" />
 
 </FrameLayout>
