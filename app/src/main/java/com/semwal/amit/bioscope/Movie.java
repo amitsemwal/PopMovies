@@ -6,16 +6,26 @@ import android.os.Parcelable;
 /**
  * Created by Amit on 16-Feb-16.
  */
-public class MovieData implements Parcelable {
-    private int id;
+public class Movie implements Parcelable {
+    public static final Parcelable.Creator<Movie> CREATOR
+            = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+    private int id;//id of movie
     private String title; // original_title
     private String poster; // poster_path
     private String background; // backdrop_path
-    private String overview;
+    private String overview; // overview
     private int rating; // vote_average
     private String date; // release_date
 
-    private MovieData(Parcel in) {
+    private Movie(Parcel in) {
         id = in.readInt();
         title = in.readString();
         poster = in.readString();
@@ -25,11 +35,11 @@ public class MovieData implements Parcelable {
         date = in.readString();
     }
 
-    public MovieData() {
+    public Movie() {
 
     }
 
-    public MovieData(int id, String title, String image, String image2, String overview, int rating, String date) {
+    public Movie(int id, String title, String image, String image2, String overview, int rating, String date) {
         this.id = id;
         this.title = title;
         this.poster = image;
@@ -72,7 +82,6 @@ public class MovieData implements Parcelable {
         return 0;
     }
 
-
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
@@ -83,17 +92,6 @@ public class MovieData implements Parcelable {
         dest.writeInt(rating);
         dest.writeString(date);
     }
-
-    public static final Parcelable.Creator<MovieData> CREATOR
-            = new Parcelable.Creator<MovieData>() {
-        public MovieData createFromParcel(Parcel in) {
-            return new MovieData(in);
-        }
-
-        public MovieData[] newArray(int size) {
-            return new MovieData[size];
-        }
-    };
 
 
 }

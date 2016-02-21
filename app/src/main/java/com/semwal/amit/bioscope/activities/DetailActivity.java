@@ -1,7 +1,11 @@
-package com.semwal.amit.bioscope;
+package com.semwal.amit.bioscope.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.semwal.amit.bioscope.R;
+import com.semwal.amit.bioscope.Utility;
+import com.semwal.amit.bioscope.fragments.DetailActivityFragment;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -13,8 +17,8 @@ public class DetailActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
-            arguments.putParcelable("MOVIE",
-                    getIntent().getParcelableExtra("MOVIE"));
+            arguments.putParcelable(Utility.DETAIL_MOVIE_KEY,
+                    getIntent().getParcelableExtra(Utility.DETAIL_MOVIE_KEY));
 
             DetailActivityFragment fragment = new DetailActivityFragment();
             fragment.setArguments(arguments);

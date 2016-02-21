@@ -19,47 +19,50 @@ import java.util.ArrayList;
 /**
  * Created by Amit on 28-Jan-16.
  */
-public class FetchMovieData extends AsyncTask <String, Void, ArrayList<MovieData>>{
+public class FetchAsyncTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
+    private final String TAG = FetchAsyncTask.class.getSimpleName();
+    public AsyncResponse delegate = null;
 
-    private final String TAG = FetchMovieData.class.getSimpleName();
+    public FetchAsyncTask(AsyncResponse delegate) {
+        this.delegate = delegate;
+    }
 
-    private ArrayList<MovieData> getMoviesDataFromJson(String jsonStr) throws JSONException {
+    private ArrayList<Movie> getMoviesDataFromJson(String jsonStr) throws JSONException {
         JSONObject movieJson = new JSONObject(jsonStr);
-        JSONArray movieArray = movieJson.getJSONArray("results");
+        JSONArray movieArray = movieJson.getJSONArray(Utility.JSON_RESULT_TAG);
 
-        ArrayList<MovieData> results = new ArrayList<>();
+        ArrayList<Movie> results = new ArrayList<>();
 
-        for(int i = 0; i < movieArray.length(); i++) {
+        for (int i = 0; i < movieArray.length(); i++) {
             JSONObject movie = movieArray.getJSONObject(i);
-            MovieData movieModel = new MovieData(
-                    movie.getInt("id"),
-                    movie.getString("original_title"),
-                    movie.getString("poster_path"),
-                    movie.getString("backdrop_path"),
-                    movie.getString("overview"),
-                    movie.getInt("vote_average"),
-                    movie.getString("release_date")
+            Movie movieModel = new Movie(
+                    movie.getInt(Utility.MOVIE_ID_TAG),
+                    movie.getString(Utility.MOVIE_TITLE_TAG),
+                    movie.getString(Utility.MOVIE_POSTER_TAG),
+                    movie.getString(Utility.MOVIE_BACKGROUND_TAG),
+                    movie.getString(Utility.MOVIE_OVERVIEW_TAG),
+                    movie.getInt(Utility.MOVIE_VOTE_AVERAGE_TAG),
+                    movie.getString(Utility.MOVIE_RELEASE_DATE_TAG)
             );
-          //  Log.i(TAG, "getMoviesDataFromJson: "+ movieModel.getTitle());
             results.add(movieModel);
         }
 
         return results;
     }
+
     @Override
-    protected ArrayList<MovieData> doInBackground(String... params) {
+    protected ArrayList<Movie> doInBackground(String... params) {
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String movieJsonStr = null;
 
-        String BASE_URL = "http://api.themoviedb.org/3/discover/movie";
         String MOVIEDB_API_KEY = BuildConfig.MOVIEDB_API_KEY;
         try {
-            Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-                    .appendQueryParameter("sort_by", params[0])
-                    .appendQueryParameter("api_key", MOVIEDB_API_KEY)
+            Uri builtUri = Uri.parse(Utility.BASE_URL).buildUpon()
+                    .appendQueryParameter(Utility.SORT_KEY_PARAM, params[0])
+                    .appendQueryParameter(Utility.API_KEY_PARAM, MOVIEDB_API_KEY)
                     .build();
 
             URL url = new URL(builtUri.toString());
@@ -71,7 +74,7 @@ public class FetchMovieData extends AsyncTask <String, Void, ArrayList<MovieData
             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
-                movieJsonStr= null;
+                movieJsonStr = null;
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -104,7 +107,6 @@ public class FetchMovieData extends AsyncTask <String, Void, ArrayList<MovieData
 
         }
         try {
-            Log.i(TAG, "doInBackground: JSON " +movieJsonStr);
             return getMoviesDataFromJson(movieJsonStr);
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -116,18 +118,12 @@ public class FetchMovieData extends AsyncTask <String, Void, ArrayList<MovieData
 
     }
 
-    public interface AsyncResponse {
-        void processFinish(ArrayList<MovieData> output);
-    }
-
-    public AsyncResponse delegate = null;
-
-    public FetchMovieData(AsyncResponse delegate){
-        this.delegate = delegate;
-    }
-
     @Override
-    protected void onPostExecute(ArrayList<MovieData> result) {
+    protected void onPostExecute(ArrayList<Movie> result) {
         delegate.processFinish(result);
+    }
+
+    public interface AsyncResponse {
+        void processFinish(ArrayList<Movie> output);
     }
 }

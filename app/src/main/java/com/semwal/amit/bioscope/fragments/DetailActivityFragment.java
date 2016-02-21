@@ -1,4 +1,4 @@
-package com.semwal.amit.bioscope;
+package com.semwal.amit.bioscope.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.semwal.amit.bioscope.Movie;
+import com.semwal.amit.bioscope.R;
+import com.semwal.amit.bioscope.Utility;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -19,7 +22,7 @@ import java.text.SimpleDateFormat;
  */
 public class DetailActivityFragment extends Fragment {
 
-    private MovieData mMovie;
+    private Movie mMovie;
 
     private ImageView mImageView;
     private TextView mTitleView;
@@ -35,7 +38,7 @@ public class DetailActivityFragment extends Fragment {
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mMovie = arguments.getParcelable("MOVIE");
+            mMovie = arguments.getParcelable(Utility.DETAIL_MOVIE_KEY);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -46,7 +49,7 @@ public class DetailActivityFragment extends Fragment {
         mDateView = (TextView) rootView.findViewById(R.id.detail_date);
         mVoteAverageView = (TextView) rootView.findViewById(R.id.detail_vote_average);
 
-        String image_url = "http://image.tmdb.org/t/p/w342" + mMovie.getBackground();
+        String image_url = Utility.IMAGE_URL_HIGH_QUALITY + mMovie.getBackground();
         Picasso.with(getContext()).load(image_url).into(mImageView);
 
         mTitleView.setText(mMovie.getTitle());

@@ -14,8 +14,8 @@ import java.util.List;
 /**
  * Created by Amit on 18-Feb-16.
  */
-public class MovieDataAdapter extends ArrayAdapter<MovieData> {
-    public MovieDataAdapter(Context context, List<MovieData> movieDataList) {
+public class MovieDataAdapter extends ArrayAdapter<Movie> {
+    public MovieDataAdapter(Context context, List<Movie> movieDataList) {
         super(context, 0, movieDataList);
     }
     public MovieDataAdapter(Context context) {
@@ -33,7 +33,7 @@ public class MovieDataAdapter extends ArrayAdapter<MovieData> {
             view.setTag(viewHolder);
         }
 
-        final MovieData movie = getItem(position);
+        final Movie movie = getItem(position);
         String image_url = "http://image.tmdb.org/t/p/w185" + movie.getPoster();
 
         viewHolder = (ViewHolder) view.getTag();

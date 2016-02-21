@@ -1,4 +1,4 @@
-package com.semwal.amit.bioscope;
+package com.semwal.amit.bioscope.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,20 +13,25 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.semwal.amit.bioscope.FetchAsyncTask;
+import com.semwal.amit.bioscope.Movie;
+import com.semwal.amit.bioscope.MovieDataAdapter;
+import com.semwal.amit.bioscope.R;
+import com.semwal.amit.bioscope.Utility;
+import com.semwal.amit.bioscope.activities.DetailActivity;
+
 import java.util.ArrayList;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class AllPostersFragment extends Fragment {
-    private static final String SORT_SETTING = "sort_setting";
-    private static final String POPULARITY_DESC = "popularity.desc";
-    private static final String RATING_DESC = "vote_average.desc";
+    public static final String MOVIES_KEY = "moviesARRAYLIST";
     private GridView mGridView;
     private MovieDataAdapter dataAdapter;
-    private ArrayList<MovieData> movies;
+    private ArrayList<Movie> movies;
     private String TAG = AllPostersFragment.class.getSimpleName();
-    private String mSortBy = POPULARITY_DESC;
+    private String mSortBy = Utility.SORT_POPULARITY_DESC;
 
     public AllPostersFragment() {
     }
@@ -34,25 +39,23 @@ public class AllPostersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: inside");
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         mGridView = (GridView) view.findViewById(R.id.gridview_movies);
 
         dataAdapter = new MovieDataAdapter(getActivity());
-        if (savedInstanceState != null && savedInstanceState.containsKey("movies")) {
-            mSortBy = savedInstanceState.getString(SORT_SETTING);
-
-            movies = savedInstanceState.getParcelableArrayList("movies");
+        if (savedInstanceState != null && savedInstanceState.containsKey(MOVIES_KEY)) {
+            mSortBy = savedInstanceState.getString(Utility.SORT_SETTING_KEY);
+            movies = savedInstanceState.getParcelableArrayList(MOVIES_KEY);
         }
         updateMovies(mSortBy);
         mGridView.setAdapter(dataAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MovieData movie = dataAdapter.getItem(position);
+                Movie movie = dataAdapter.getItem(position);
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra("MOVIE", movie);
+                        .putExtra(Utility.DETAIL_MOVIE_KEY, movie);
                 startActivity(intent);
             }
         });
@@ -67,15 +70,14 @@ public class AllPostersFragment extends Fragment {
             dataAdapter.addAll(movies);
             return;
         }
-        FetchMovieData moviesTask = new FetchMovieData(new FetchMovieData.AsyncResponse() {
+        FetchAsyncTask moviesTask = new FetchAsyncTask(new FetchAsyncTask.AsyncResponse() {
             @Override
-            public void processFinish(ArrayList<MovieData> output) {
+            public void processFinish(ArrayList<Movie> output) {
                 Log.i(TAG, "processFinish: s");
                 if (output != null && dataAdapter != null) {
                     dataAdapter.clear();
                     movies = new ArrayList<>();
                     movies.addAll(output);
-                    Log.i(TAG, "processFinish: " + movies.size());
                     dataAdapter.addAll(movies);
                 }
             }
@@ -86,9 +88,9 @@ public class AllPostersFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (movies != null) {
-            outState.putParcelableArrayList("movies", movies);
+            outState.putParcelableArrayList(MOVIES_KEY, movies);
 
-            outState.putString(SORT_SETTING, mSortBy);
+            outState.putString(Utility.SORT_SETTING_KEY, mSortBy);
             super.onSaveInstanceState(outState);
 
         }
@@ -105,7 +107,7 @@ public class AllPostersFragment extends Fragment {
         inflater.inflate(R.menu.menu_main, menu);
         MenuItem action_sort_by_popularity = menu.findItem(R.id.action_sort_by_popularity);
         MenuItem action_sort_by_rating = menu.findItem(R.id.action_sort_by_rating);
-        if (mSortBy.contentEquals(POPULARITY_DESC)) {
+        if (mSortBy.contentEquals(Utility.SORT_POPULARITY_DESC)) {
             if (!action_sort_by_popularity.isChecked())
                 action_sort_by_popularity.setChecked(true);
         } else {
@@ -123,7 +125,7 @@ public class AllPostersFragment extends Fragment {
                     item.setChecked(false);
                 else
                     item.setChecked(true);
-                mSortBy = POPULARITY_DESC;
+                mSortBy = Utility.SORT_POPULARITY_DESC;
                 movies = null;
                 updateMovies(mSortBy);
                 return true;
@@ -132,7 +134,7 @@ public class AllPostersFragment extends Fragment {
                     item.setChecked(false);
                 else
                     item.setChecked(true);
-                mSortBy = RATING_DESC;
+                mSortBy = Utility.SORT_VOTE_AVERAGE_DESC;
                 movies = null;
                 updateMovies(mSortBy);
                 return true;
