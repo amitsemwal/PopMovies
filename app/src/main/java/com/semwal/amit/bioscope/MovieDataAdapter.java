@@ -11,6 +11,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Created by Amit on 18-Feb-16.
  */
@@ -34,7 +37,7 @@ public class MovieDataAdapter extends ArrayAdapter<Movie> {
         }
 
         final Movie movie = getItem(position);
-        String image_url = "http://image.tmdb.org/t/p/w185" + movie.getPoster();
+        String image_url = Utility.IMAGE_URL_LOW_QUALITY + movie.getPoster();
 
         viewHolder = (ViewHolder) view.getTag();
         Picasso.with(getContext())
@@ -46,10 +49,11 @@ public class MovieDataAdapter extends ArrayAdapter<Movie> {
     }
 
     static class ViewHolder {
+        @Bind(R.id.grid_item_image)
         ImageView posterImage;
 
         public ViewHolder(View view) {
-            posterImage = (ImageView) view.findViewById(R.id.grid_item_image);
+            ButterKnife.bind(this, view);
         }
     }
 

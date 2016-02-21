@@ -22,12 +22,16 @@ import com.semwal.amit.bioscope.activities.DetailActivity;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class AllPostersFragment extends Fragment {
     public static final String MOVIES_KEY = "moviesARRAYLIST";
-    private GridView mGridView;
+    @Bind(R.id.gridview_movies)
+    GridView mGridView;
     private MovieDataAdapter dataAdapter;
     private ArrayList<Movie> movies;
     private String TAG = AllPostersFragment.class.getSimpleName();
@@ -41,8 +45,7 @@ public class AllPostersFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mGridView = (GridView) view.findViewById(R.id.gridview_movies);
-
+        ButterKnife.bind(this, view);
         dataAdapter = new MovieDataAdapter(getActivity());
         if (savedInstanceState != null && savedInstanceState.containsKey(MOVIES_KEY)) {
             mSortBy = savedInstanceState.getString(Utility.SORT_SETTING_KEY);

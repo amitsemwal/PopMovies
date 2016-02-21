@@ -17,18 +17,25 @@ import com.squareup.picasso.Picasso;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class DetailActivityFragment extends Fragment {
 
+    @Bind(R.id.detail_image)
+    ImageView mImageView;
+    @Bind(R.id.detail_title)
+    TextView mTitleView;
+    @Bind(R.id.detail_overview)
+    TextView mOverviewView;
+    @Bind(R.id.detail_date)
+    TextView mDateView;
+    @Bind(R.id.detail_vote_average)
+    TextView mVoteAverageView;
     private Movie mMovie;
-
-    private ImageView mImageView;
-    private TextView mTitleView;
-    private TextView mOverviewView;
-    private TextView mDateView;
-    private TextView mVoteAverageView;
 
     public DetailActivityFragment() {
     }
@@ -42,12 +49,7 @@ public class DetailActivityFragment extends Fragment {
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        mImageView = (ImageView) rootView.findViewById(R.id.detail_image);
-        mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
-        mOverviewView = (TextView) rootView.findViewById(R.id.detail_overview);
-        mDateView = (TextView) rootView.findViewById(R.id.detail_date);
-        mVoteAverageView = (TextView) rootView.findViewById(R.id.detail_vote_average);
+        ButterKnife.bind(this, rootView);
 
         String image_url = Utility.IMAGE_URL_HIGH_QUALITY + mMovie.getBackground();
         Picasso.with(getContext()).load(image_url).into(mImageView);
@@ -70,4 +72,5 @@ public class DetailActivityFragment extends Fragment {
 
         return rootView;
     }
+
 }
