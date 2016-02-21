@@ -22,6 +22,7 @@ You should use an Intent to open a youtube link in either the native app or a we
 
 ## Consider using
   - [Fresco](http://frescolib.org/) for image loading
+  - Retrifit for networking.
   - [Gson](https://github.com/google/gson) for JSON processing 
   - Automate Content Providers:
     - [ProviGen](https://github.com/TimotheeJeannin/ProviGen)
