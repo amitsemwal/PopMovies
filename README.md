@@ -1,4 +1,4 @@
-# PopMovies
+# BioScope
 Popular Movies App: A task from Android Nanodegree @ Udacity
 
 **PopMovies** is a movies app that will allow a user to discover popular movies. [Read here](https://docs.google.com/document/d/1gtXUu1nzLGWrGfVCD6tEA0YHoYA9UNyT2yByqjJemp8/pub?embedded=true) the project description.
@@ -22,6 +22,7 @@ You should use an Intent to open a youtube link in either the native app or a we
 
 ## Consider using
   - [Fresco](http://frescolib.org/) for image loading
+  - Retrifit for networking.
   - [Gson](https://github.com/google/gson) for JSON processing 
   - Automate Content Providers:
     - [ProviGen](https://github.com/TimotheeJeannin/ProviGen)
