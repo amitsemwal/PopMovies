@@ -21,4 +21,5 @@ public class Utility {
     public static final String SORT_SETTING_KEY = "sort_setting";
     public static final String SORT_POPULARITY_DESC = "popularity.desc";
     public static final String SORT_VOTE_AVERAGE_DESC = "vote_average.desc";
+    public static final String HASHTAG = "#Bioscope by AmitSemwal";
 }

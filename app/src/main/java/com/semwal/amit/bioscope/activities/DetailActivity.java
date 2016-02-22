@@ -6,7 +6,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.semwal.amit.bioscope.R;
 import com.semwal.amit.bioscope.Utility;
-import com.semwal.amit.bioscope.fragments.DetailActivityFragment;
+import com.semwal.amit.bioscope.fragments.DetailsFragment;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -26,7 +26,7 @@ public class DetailActivity extends AppCompatActivity {
             arguments.putParcelable(Utility.DETAIL_MOVIE_KEY,
                     getIntent().getParcelableExtra(Utility.DETAIL_MOVIE_KEY));
 
-            DetailActivityFragment fragment = new DetailActivityFragment();
+            DetailsFragment fragment = new DetailsFragment();
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()

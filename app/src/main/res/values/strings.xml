@@ -11,5 +11,6 @@
     <string name="trailers">Trailers</string>
     <string name="reviews">Reviews</string>
     <string name="vote_average">Votes</string>
+    <string name="action_share">Share</string>
 
 </resources>
