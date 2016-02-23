@@ -1,4 +1,4 @@
-package com.semwal.amit.bioscope;
+package com.semwal.amit.bioscope.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -1,8 +1,12 @@
-package com.semwal.amit.bioscope;
+package com.semwal.amit.bioscope.network;
 
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.semwal.amit.bioscope.BuildConfig;
+import com.semwal.amit.bioscope.data.Movie;
+import com.semwal.amit.bioscope.utils.Constants;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,20 +34,20 @@ public class FetchAsyncTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
     private ArrayList<Movie> getMoviesDataFromJson(String jsonStr) throws JSONException {
         JSONObject movieJson = new JSONObject(jsonStr);
-        JSONArray movieArray = movieJson.getJSONArray(Utility.JSON_RESULT_TAG);
+        JSONArray movieArray = movieJson.getJSONArray(Constants.JsonTags.RESULTS);
 
         ArrayList<Movie> results = new ArrayList<>();
 
         for (int i = 0; i < movieArray.length(); i++) {
             JSONObject movie = movieArray.getJSONObject(i);
             Movie movieModel = new Movie(
-                    movie.getInt(Utility.MOVIE_ID_TAG),
-                    movie.getString(Utility.MOVIE_TITLE_TAG),
-                    movie.getString(Utility.MOVIE_POSTER_TAG),
-                    movie.getString(Utility.MOVIE_BACKGROUND_TAG),
-                    movie.getString(Utility.MOVIE_OVERVIEW_TAG),
-                    movie.getInt(Utility.MOVIE_VOTE_AVERAGE_TAG),
-                    movie.getString(Utility.MOVIE_RELEASE_DATE_TAG)
+                    movie.getInt(Constants.JsonTags.Summary.MOVIE_ID),
+                    movie.getString(Constants.JsonTags.Summary.ORIGINAL_TITLE),
+                    movie.getString(Constants.JsonTags.Summary.POSTER_PATH),
+                    movie.getString(Constants.JsonTags.Summary.BACKDROP_PATH),
+                    movie.getString(Constants.JsonTags.Summary.OVERVIEW),
+                    movie.getInt(Constants.JsonTags.Summary.VOTE_AVERAGE),
+                    movie.getString(Constants.JsonTags.Summary.RELEASE_DATE)
             );
             results.add(movieModel);
         }
@@ -60,9 +64,9 @@ public class FetchAsyncTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
         String MOVIEDB_API_KEY = BuildConfig.MOVIEDB_API_KEY;
         try {
-            Uri builtUri = Uri.parse(Utility.BASE_URL).buildUpon()
-                    .appendQueryParameter(Utility.SORT_KEY_PARAM, params[0])
-                    .appendQueryParameter(Utility.API_KEY_PARAM, MOVIEDB_API_KEY)
+            Uri builtUri = Uri.parse(Constants.Api.BASE_URL).buildUpon()
+                    .appendQueryParameter(Constants.Api.SORT_KEY_PARAM, params[0])
+                    .appendQueryParameter(Constants.Api.API_KEY_PARAM, MOVIEDB_API_KEY)
                     .build();
 
             URL url = new URL(builtUri.toString());
@@ -72,18 +76,19 @@ public class FetchAsyncTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
             // Read the input stream into a String
             InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
+            StringBuffer buffer;
+            buffer = new StringBuffer();
             if (inputStream == null) {
                 movieJsonStr = null;
             }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
+            reader = new BufferedReader(new InputStreamReader(inputStream != null ? inputStream : null));
 
             String line;
             while ((line = reader.readLine()) != null) {
                 // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                 // But it does make debugging a *lot* easier if you print out the completed
                 // buffer for debugging.
-                buffer.append(line + "\n");
+                buffer.append(line).append("\n");
             }
 
             if (buffer.length() == 0) {

@@ -16,9 +16,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.semwal.amit.bioscope.Movie;
 import com.semwal.amit.bioscope.R;
-import com.semwal.amit.bioscope.Utility;
+import com.semwal.amit.bioscope.data.Movie;
+import com.semwal.amit.bioscope.utils.Constants;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -56,14 +56,14 @@ public class DetailsFragment extends Fragment {
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mMovie = arguments.getParcelable(Utility.DETAIL_MOVIE_KEY);
+            mMovie = arguments.getParcelable(Constants.LocalKeys.DETAIL_MOVIE_KEY);
             shareString = "Checkout this exciting movie. " + mMovie.getTitle();
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-        String image_url = Utility.IMAGE_URL_HIGH_QUALITY + mMovie.getBackground();
+        String image_url = Constants.Api.IMAGE_URL_HIGH_QUALITY + mMovie.getBackground();
         Picasso.with(getContext()).load(image_url).into(mImageView);
 
         mTitleView.setText(mMovie.getTitle());
@@ -111,7 +111,7 @@ public class DetailsFragment extends Fragment {
         Intent intent = shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT,
-                shareString + Utility.HASHTAG);
+                shareString + Constants.LocalKeys.HASHTAG);
         return shareIntent;
     }
 

@@ -5,8 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.semwal.amit.bioscope.R;
-import com.semwal.amit.bioscope.Utility;
 import com.semwal.amit.bioscope.fragments.DetailsFragment;
+import com.semwal.amit.bioscope.utils.Constants;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -23,8 +23,8 @@ public class DetailActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
-            arguments.putParcelable(Utility.DETAIL_MOVIE_KEY,
-                    getIntent().getParcelableExtra(Utility.DETAIL_MOVIE_KEY));
+            arguments.putParcelable(Constants.LocalKeys.DETAIL_MOVIE_KEY,
+                    getIntent().getParcelableExtra(Constants.LocalKeys.DETAIL_MOVIE_KEY));
 
             DetailsFragment fragment = new DetailsFragment();
             fragment.setArguments(arguments);
