@@ -10,7 +10,7 @@ public class Movie implements Parcelable {
     public static final Parcelable.Creator<Movie> CREATOR
             = new Parcelable.Creator<Movie>() {
         public Movie createFromParcel(Parcel in) {
-            return new Movie(in);
+            return createMovie(in);
         }
 
         public Movie[] newArray(int size) {
@@ -22,24 +22,27 @@ public class Movie implements Parcelable {
     private String poster; // poster_path
     private String background; // backdrop_path
     private String overview; // overview
-    private int rating; // vote_average
+    private double rating; // vote_average
+    private double popularity; // vote_average
     private String date; // release_date
-
+    private int vote_count;
     private Movie(Parcel in) {
         id = in.readInt();
         title = in.readString();
         poster = in.readString();
         background = in.readString();
         overview = in.readString();
-        rating = in.readInt();
+        rating = in.readDouble();
         date = in.readString();
+        popularity = in.readDouble();
+        vote_count = in.readInt();
     }
 
     public Movie() {
 
     }
 
-    public Movie(int id, String title, String image, String image2, String overview, int rating, String date) {
+    public Movie(int id, String title, String image, String image2, String overview, double rating, String date, double popularity, int vote_count) {
         this.id = id;
         this.title = title;
         this.poster = image;
@@ -47,6 +50,20 @@ public class Movie implements Parcelable {
         this.overview = overview;
         this.rating = rating;
         this.date = date;
+        this.popularity = popularity;
+        this.vote_count = vote_count;
+    }
+
+    private static Movie createMovie(Parcel in) {
+        return new Movie(in);
+    }
+
+    public double getPopularity() {
+        return popularity;
+    }
+
+    public int getVote_count() {
+        return vote_count;
     }
 
     public int getId() {
@@ -69,7 +86,7 @@ public class Movie implements Parcelable {
         return overview;
     }
 
-    public int getRating() {
+    public double getRating() {
         return rating;
     }
 
@@ -89,8 +106,10 @@ public class Movie implements Parcelable {
         dest.writeString(poster);
         dest.writeString(background);
         dest.writeString(overview);
-        dest.writeInt(rating);
+        dest.writeDouble(rating);
         dest.writeString(date);
+        dest.writeDouble(popularity);
+        dest.writeInt(vote_count);
     }
 
 

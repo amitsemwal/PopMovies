@@ -23,7 +23,9 @@ public class Constants {
         public class Trailer {
             public static final String ID = "id";
             public static final String NAME = "name";
-            public static final String LINK = "key";
+            public static final String KEY = "key";
+            public static final String URL = "url";
+            public static final String THUMB = "thumb";
 
         }
 

@@ -46,8 +46,11 @@ public class FetchAsyncTask extends AsyncTask<String, Void, ArrayList<Movie>> {
                     movie.getString(Constants.JsonTags.Summary.POSTER_PATH),
                     movie.getString(Constants.JsonTags.Summary.BACKDROP_PATH),
                     movie.getString(Constants.JsonTags.Summary.OVERVIEW),
-                    movie.getInt(Constants.JsonTags.Summary.VOTE_AVERAGE),
-                    movie.getString(Constants.JsonTags.Summary.RELEASE_DATE)
+                    movie.getDouble(Constants.JsonTags.Summary.VOTE_AVERAGE),
+                    movie.getString(Constants.JsonTags.Summary.RELEASE_DATE),
+                    movie.getDouble(Constants.JsonTags.Summary.POPULARITY),
+                    movie.getInt(Constants.JsonTags.Summary.VOTE_COUNT)
+
             );
             results.add(movieModel);
         }

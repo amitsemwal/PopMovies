@@ -80,7 +80,7 @@ public class DetailsFragment extends Fragment {
             e.printStackTrace();
         }
 
-        mVoteAverageView.setText(Integer.toString(mMovie.getRating()));
+        mVoteAverageView.setText(Double.toString(mMovie.getRating()) + "(" + Integer.toString(mMovie.getVote_count()) + " Votes )");
 
         return rootView;
     }
