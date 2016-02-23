@@ -1,8 +1,11 @@
 package com.semwal.amit.bioscope.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.semwal.amit.bioscope.R;
 import com.semwal.amit.bioscope.fragments.DetailsFragment;
@@ -15,9 +18,20 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar1);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar1);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        final FloatingActionButton fav_btn = (FloatingActionButton) findViewById(R.id.fav_movie_button);
+        fav_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Favourite Movie", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                //fav_btn.setImageDrawable("");
+            }
+        });
+
 
 
 

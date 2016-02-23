@@ -13,5 +13,6 @@
     <string name="vote_average">Votes</string>
     <string name="action_share">Share</string>
     <string name="summary">Summary</string>
+    <string name="title_activity_main2">Main2Activity</string>
 
 </resources>
