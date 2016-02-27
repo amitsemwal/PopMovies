@@ -27,7 +27,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
     static final String DATABASE_NAME = "bioscope.db";
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String TAG = MovieDbHelper.class.getSimpleName();
 
     public MovieDbHelper(Context context) {
@@ -46,7 +46,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.COLUMN_AVG_VOTES + " REAL NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_COUNT_VOTES + " INTEGER NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, );";
+                MovieContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL );";
 
         final String SQL_CREATE_TRAILER_TABLE = "CREATE TABLE " + MovieContract.TrailerEntry.TABLE_NAME + " (" +
                 MovieContract.TrailerEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -57,7 +57,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.TrailerEntry.COLUMN_TRAILER_URL + " TEXT NOT NULL," +
 
                 " FOREIGN KEY (" + MovieContract.TrailerEntry.COLUMN_MOVIE_ID + ") REFERENCES " +
-                MovieContract.MovieEntry.TABLE_NAME + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + "); ";
+                MovieContract.MovieEntry.TABLE_NAME + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + ")); ";
 
         final String SQL_CREATE_REVIEW_TABLE = "CREATE TABLE " + MovieContract.ReviewsEntry.TABLE_NAME + " (" +
                 MovieContract.ReviewsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -66,7 +66,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.ReviewsEntry.COLUMN_REVIEW_CONTENT + " TEXT NOT NULL, " +
 
                 " FOREIGN KEY (" + MovieContract.ReviewsEntry.COLUMN_MOVIE_ID + ") REFERENCES " +
-                MovieContract.MovieEntry.TABLE_NAME + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + "); ";
+                MovieContract.MovieEntry.TABLE_NAME + " (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + ")); ";
         Log.i(TAG, "onCreate: " + SQL_CREATE_MOVIE_TABLE);
         Log.i(TAG, "onCreate: " + SQL_CREATE_TRAILER_TABLE);
         Log.i(TAG, "onCreate: " + SQL_CREATE_REVIEW_TABLE);

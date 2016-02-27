@@ -45,15 +45,19 @@ public class DetailsFragment extends Fragment {
     TextView mVoteAverageView;
     private Movie mMovie;
     private String shareString;
-
     public DetailsFragment() {
         setHasOptionsMenu(true);
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         Bundle arguments = getArguments();
         if (arguments != null) {
             mMovie = arguments.getParcelable(Constants.LocalKeys.DETAIL_MOVIE_KEY);
@@ -62,7 +66,6 @@ public class DetailsFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
-
         String image_url = Constants.Api.IMAGE_URL_HIGH_QUALITY + mMovie.getBackground();
         Picasso.with(getContext()).load(image_url).into(mImageView);
 

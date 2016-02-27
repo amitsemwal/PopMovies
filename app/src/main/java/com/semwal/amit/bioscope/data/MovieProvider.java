@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
 
 public class MovieProvider extends ContentProvider {
 
@@ -32,6 +33,7 @@ public class MovieProvider extends ContentProvider {
     static final int MOVIE_WITH_ID = 101;
     static final int TRAILER_WITH_ID = 301;
     static final int REVIEW_WITH_ID = 201;
+    private static final String TAG = "MovieProvider";
     // The URI Matcher used by this content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final SQLiteQueryBuilder sFavouriteMoviesQueryBuilder;
@@ -50,17 +52,17 @@ public class MovieProvider extends ContentProvider {
         sFavouriteMoviesQueryBuilder = new SQLiteQueryBuilder();
 
         sFavouriteMoviesQueryBuilder.setTables(
-                MovieContract.MovieEntry.TABLE_NAME + " INNER JOIN " +
-                        MovieContract.TrailerEntry.TABLE_NAME + " INNER JOIN " +
-                        MovieContract.ReviewsEntry.TABLE_NAME +
-                        " ON (" + MovieContract.MovieEntry.TABLE_NAME +
-                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID +
-                        " = " + MovieContract.TrailerEntry.TABLE_NAME +
-                        "." + MovieContract.TrailerEntry.COLUMN_MOVIE_ID +
-                        ") AND (" + MovieContract.MovieEntry.TABLE_NAME +
-                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID +
-                        " = " + MovieContract.ReviewsEntry.TABLE_NAME +
-                        "." + MovieContract.ReviewsEntry.COLUMN_MOVIE_ID + "); ");
+                MovieContract.MovieEntry.TABLE_NAME + ";");//" INNER JOIN " +
+        //MovieContract.TrailerEntry.TABLE_NAME + " INNER JOIN " +
+        //MovieContract.ReviewsEntry.TABLE_NAME +
+//                        " ON (" + MovieContract.MovieEntry.TABLE_NAME +
+//                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID +
+//                        " = " + MovieContract.TrailerEntry.TABLE_NAME +
+//                        "." + MovieContract.TrailerEntry.COLUMN_MOVIE_ID +
+//                        ") AND (" + MovieContract.MovieEntry.TABLE_NAME +
+//                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID +
+//                        " = " + MovieContract.ReviewsEntry.TABLE_NAME +
+//                        "." + MovieContract.ReviewsEntry.COLUMN_MOVIE_ID + "); ");
     }
 
     private MovieDbHelper mOpenHelper;
@@ -81,6 +83,7 @@ public class MovieProvider extends ContentProvider {
         String mMovieIdOrTitle = MovieContract.MovieEntry.getMovieIdOrTitleFromUri(uri);
         String[] selectionArgs = new String[]{mMovieIdOrTitle};
         String selection;
+
         try {
             Integer.parseInt(mMovieIdOrTitle);
             selection = sMovieSelectionByID;
@@ -143,11 +146,14 @@ public class MovieProvider extends ContentProvider {
         // Here's the switch statement that, given a URI, will determine what kind of request it is,
         // and query the database accordingly.
         Cursor retCursor;
+        Log.d(TAG, "query: uri " + uri.toString());
+        Log.d(TAG, "query: matcher " + Integer.toString(sUriMatcher.match(uri)));
+
         switch (sUriMatcher.match(uri)) {
-            // "weather/*/*"
             case MOVIE:
             case TRAILER:
             case REVIEW: {
+
                 retCursor = getFavouriteMovies(uri, projection, sortOrder);
                 break;
             }
@@ -235,7 +241,7 @@ public class MovieProvider extends ContentProvider {
 
     }
 
-    private void normalizeDate(ContentValues values) {
+    private void normalizeDate1(ContentValues values) {
         // normalize the date value
         if (values.containsKey(MovieContract.MovieEntry.COLUMN_RELEASE_DATE)) {
             long dateValue = values.getAsLong(MovieContract.MovieEntry.COLUMN_RELEASE_DATE);
@@ -262,7 +268,7 @@ public class MovieProvider extends ContentProvider {
                 returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        normalizeDate(value);
+                        // normalizeDate(value);
                         long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;
@@ -279,7 +285,7 @@ public class MovieProvider extends ContentProvider {
                 returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        normalizeDate(value);
+                        //normalizeDate(value);
                         long _id = db.insert(MovieContract.ReviewsEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;
@@ -296,7 +302,7 @@ public class MovieProvider extends ContentProvider {
                 returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        normalizeDate(value);
+                        //normalizeDate(value);
                         long _id = db.insert(MovieContract.TrailerEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;

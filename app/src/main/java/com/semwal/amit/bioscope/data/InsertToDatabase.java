@@ -15,8 +15,12 @@
  */
 package com.semwal.amit.bioscope.data;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,7 +28,7 @@ import java.util.Vector;
 
 public class InsertToDatabase {// extends AsyncTask<String, Void, String[]> {
 
-    private final String LOG_TAG = InsertToDatabase.class.getSimpleName();
+    private final String TAG = InsertToDatabase.class.getSimpleName();
 
     private final Context mContext;
 
@@ -44,11 +48,53 @@ public class InsertToDatabase {// extends AsyncTask<String, Void, String[]> {
         return format.format(date).toString();
     }
 
-    long addLocation(String locationSetting, String cityName, double lat, double lon) {
-        // Students: First, check if the location with this city name exists in the db
-        // If it exists, return the current ID
-        // Otherwise, insert it using the content resolver and the base URI
-        return -1;
+    public long addMovie(int id, String title, String image, String image2, String overview, double rating, String date, double popularity, int vote_count) {
+        long movieId;
+        Cursor movieCursor = mContext.getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                new String[]{MovieContract.MovieEntry.TABLE_NAME +
+                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                MovieContract.MovieEntry.TABLE_NAME +
+                        "." + MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?",
+                new String[]{Integer.toString(id)},
+                null);
+        Log.d(TAG, "addMovie: " + movieCursor.getColumnNames()[0].toString());
+
+        if (movieCursor.moveToFirst()) {
+            int movieIdIndex = movieCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+            movieId = movieCursor.getLong(movieIdIndex);
+            Log.d(TAG, "addMovie: " + movieIdIndex);
+            return movieId;
+        } else {
+            // Now that the content provider is set up, inserting rows of data is pretty simple.
+            // First create a ContentValues object to hold the data you want to insert.
+            ContentValues movieValues = new ContentValues();
+
+            // Then add the data, along with the corresponding name of the data type,
+            // so the content provider knows what kind of value is being inserted.
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, id);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_COUNT_VOTES, vote_count);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, date);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, image);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, image2);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_AVG_VOTES, rating);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_POPULARITY, popularity);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_TITLE, title);
+            movieValues.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, overview);
+
+            // Finally, insert location data into the database.
+            Uri insertedUri = mContext.getContentResolver().insert(
+                    MovieContract.MovieEntry.CONTENT_URI,
+                    movieValues
+            );
+
+            // The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
+            movieId = ContentUris.parseId(insertedUri);
+        }
+
+        movieCursor.close();
+        // Wait, that worked?  Yes!
+        return movieId;
     }
 
     Movie convertContentValuesToUXFormat(Vector<ContentValues> cvv) {
