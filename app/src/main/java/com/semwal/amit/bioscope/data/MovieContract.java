@@ -84,7 +84,7 @@ public class MovieContract {
 
         public static Uri buildMovieUriByTitle(String title) {
             return CONTENT_URI.buildUpon()
-                    .appendQueryParameter(COLUMN_TITLE, title).build();
+                    .appendPath(title).build();
 
         }
 
@@ -101,6 +101,7 @@ public class MovieContract {
         }
 
         public static String getMovieIdOrTitleFromUri(Uri uri) {
+            //  Log.d(TAG, "getMovieIdOrTitleFromUri: "+uri.);
             return uri.getPathSegments().get(1);
         }
 

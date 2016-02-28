@@ -100,17 +100,6 @@ public class MovieProvider extends ContentProvider {
         );
     }
 
-    private Cursor getFavouriteMovies(Uri uri, String[] projection, String sortOrder) {
-        return sFavouriteMoviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-                projection,
-                null,
-                null,
-                null,
-                null,
-                sortOrder
-        );
-    }
-
     @Override
     public boolean onCreate() {
         mOpenHelper = new MovieDbHelper(getContext());
@@ -150,11 +139,40 @@ public class MovieProvider extends ContentProvider {
         Log.d(TAG, "query: matcher " + Integer.toString(sUriMatcher.match(uri)));
 
         switch (sUriMatcher.match(uri)) {
-            case MOVIE:
-            case TRAILER:
+            case MOVIE: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.MovieEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case TRAILER: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.TrailerEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             case REVIEW: {
-
-                retCursor = getFavouriteMovies(uri, projection, sortOrder);
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.ReviewsEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
             }
             case MOVIE_WITH_ID:
