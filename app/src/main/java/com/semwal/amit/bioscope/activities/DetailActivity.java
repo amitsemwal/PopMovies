@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import com.semwal.amit.bioscope.R;
@@ -17,6 +18,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
+    private static final String TAG = "DetailActivity";
     @Bind(R.id.fav_movie_button)
     FloatingActionButton fav_btn;
     DatabaseWrapper db;
@@ -26,6 +28,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar1);
@@ -50,7 +53,7 @@ public class DetailActivity extends AppCompatActivity {
         db = new DatabaseWrapper(this);
 
         if (db.movieIdExistsInFav(mMovie.getId())) {
-            fav_btn.setImageDrawable(android.graphics.drawable.BitmapDrawable.createFromPath("C:\\Users\\Amit\\AppData\\Local\\Android\\sdk\\platforms\\android-23\\data\\res\\drawable-xhdpi\\btn_star_big_off.png"));
+            //     fav_btn.setImageDrawable(R.drawable.btn);
             // Snackbar.make(this, "Movie in favourites", Sn.setAction("Action", null).show();
 
             fav = true;

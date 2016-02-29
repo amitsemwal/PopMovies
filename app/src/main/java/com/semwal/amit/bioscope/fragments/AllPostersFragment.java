@@ -3,6 +3,7 @@ package com.semwal.amit.bioscope.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,27 +46,12 @@ public class AllPostersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+        Log.d(TAG, "onCreateView: ");
+
 
         ButterKnife.bind(this, view);
         dataAdapter = new MovieDataAdapter(getActivity());
-        if (savedInstanceState != null && savedInstanceState.containsKey(mode)) {
-            mode = savedInstanceState.getString(Constants.LocalKeys.VIEW_MODE_KEY);
-            switch (mode) {
-                case Constants.LocalKeys.HIGHEST_RATED: {
-                    TopRatedMovies = savedInstanceState.getParcelableArrayList(mode);
-                    break;
-                }
-                case Constants.LocalKeys.FAVOURITES: {
-                    FavoritesMovies = savedInstanceState.getParcelableArrayList(mode);
-                    break;
-                }
-                case Constants.LocalKeys.MOST_POPULAR: {
-                    PopularMovies = savedInstanceState.getParcelableArrayList(mode);
-                    break;
-                }
-            }
-
-        }
+        onViewStateRestored(savedInstanceState);
         updateMovies(mode);
         mGridView.setAdapter(dataAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -136,6 +122,7 @@ public class AllPostersFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState: Saving " + mode);
         switch (mode) {
             case Constants.LocalKeys.HIGHEST_RATED: {
                 if (TopRatedMovies != null)
@@ -154,8 +141,30 @@ public class AllPostersFragment extends Fragment {
             }
         }
         outState.putString(Constants.LocalKeys.VIEW_MODE_KEY, mode);
-            super.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
 
+
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        Log.d(TAG, "onViewStateRestored: Restoring ");
+        if (savedInstanceState != null) {
+            mode = savedInstanceState.getString(Constants.LocalKeys.VIEW_MODE_KEY);
+            Log.d(TAG, "onViewStateRestored: " + mode);
+            switch (mode) {
+                case Constants.LocalKeys.MOST_POPULAR:
+                    PopularMovies = savedInstanceState.getParcelableArrayList(mode);
+                    break;
+                case Constants.LocalKeys.HIGHEST_RATED:
+                    TopRatedMovies = savedInstanceState.getParcelableArrayList(mode);
+                    break;
+                case Constants.LocalKeys.FAVOURITES:
+                    FavoritesMovies = savedInstanceState.getParcelableArrayList(mode);
+                    break;
+            }
+        }
 
     }
 
@@ -174,7 +183,7 @@ public class AllPostersFragment extends Fragment {
         if (mode.contentEquals(Constants.LocalKeys.MOST_POPULAR)) {
             if (!viewMostPopularMenuItem.isChecked())
                 viewMostPopularMenuItem.setChecked(true);
-        } else {
+        } else if (mode.contentEquals(Constants.LocalKeys.HIGHEST_RATED)) {
             if (!viewTopRatedMenuItem.isChecked())
                 viewTopRatedMenuItem.setChecked(true);
             else {
@@ -183,7 +192,6 @@ public class AllPostersFragment extends Fragment {
             }
         }
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
