@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.semwal.amit.bioscope.BuildConfig;
 import com.semwal.amit.bioscope.data.DatabaseWrapper;
-import com.semwal.amit.bioscope.data.Movie;
+import com.semwal.amit.bioscope.models.Movie;
 import com.semwal.amit.bioscope.utils.Constants;
 
 import org.json.JSONArray;

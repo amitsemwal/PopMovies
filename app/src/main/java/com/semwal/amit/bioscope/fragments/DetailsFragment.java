@@ -17,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.semwal.amit.bioscope.R;
-import com.semwal.amit.bioscope.data.Movie;
+import com.semwal.amit.bioscope.models.Movie;
 import com.semwal.amit.bioscope.utils.Constants;
 import com.squareup.picasso.Picasso;
 
@@ -83,7 +83,7 @@ public class DetailsFragment extends Fragment {
             e.printStackTrace();
         }
 
-        mVoteAverageView.setText(Double.toString(mMovie.getRating()) + "(" + Integer.toString(mMovie.getVote_count()) + " Votes )");
+        mVoteAverageView.setText(Double.toString(mMovie.getRating()) + "(" + Long.toString(mMovie.getVote_count()) + " Votes )");
 
         return rootView;
     }

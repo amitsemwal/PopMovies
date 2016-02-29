@@ -15,8 +15,8 @@ import android.widget.GridView;
 
 import com.semwal.amit.bioscope.R;
 import com.semwal.amit.bioscope.activities.DetailActivity;
-import com.semwal.amit.bioscope.data.Movie;
 import com.semwal.amit.bioscope.data.MovieDataAdapter;
+import com.semwal.amit.bioscope.models.Movie;
 import com.semwal.amit.bioscope.network.FetchAsyncTask;
 import com.semwal.amit.bioscope.utils.Constants;
 

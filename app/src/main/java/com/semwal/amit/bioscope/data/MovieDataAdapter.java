@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.semwal.amit.bioscope.R;
+import com.semwal.amit.bioscope.models.Movie;
 import com.semwal.amit.bioscope.utils.Constants;
 import com.squareup.picasso.Picasso;
 
@@ -39,7 +40,7 @@ public class MovieDataAdapter extends ArrayAdapter<Movie> {
         }
 
         final Movie movie = getItem(position);
-        String image_url = Constants.Api.IMAGE_URL_LOW_QUALITY + movie.getPoster();
+        String image_url = Constants.Api.IMAGE_URL_LOW_QUALITY + movie.getPosterpath();
 
         viewHolder = (ViewHolder) view.getTag();
         Picasso.with(getContext())

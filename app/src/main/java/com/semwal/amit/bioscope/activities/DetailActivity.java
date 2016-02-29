@@ -10,8 +10,8 @@ import android.view.View;
 
 import com.semwal.amit.bioscope.R;
 import com.semwal.amit.bioscope.data.DatabaseWrapper;
-import com.semwal.amit.bioscope.data.Movie;
 import com.semwal.amit.bioscope.fragments.DetailsFragment;
+import com.semwal.amit.bioscope.models.Movie;
 import com.semwal.amit.bioscope.utils.Constants;
 
 import butterknife.Bind;
@@ -64,7 +64,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Favourite Movie", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                long id = db.addMovie(mMovie.getId(), mMovie.getTitle(), mMovie.getPoster(), mMovie.getBackground(), mMovie.getOverview(), mMovie.getRating(), mMovie.getDate(), mMovie.getPopularity(), mMovie.getVote_count());
+                long id = db.addMovie(mMovie.getId(), mMovie.getTitle(), mMovie.getPosterpath(), mMovie.getBackground(), mMovie.getOverview(), mMovie.getRating(), mMovie.getDate(), mMovie.getPopularity(), mMovie.getVote_count());
                 if (fav) {
                     int i = (int) db.removeMovie(mMovie.getId());
                     if (i == 1)

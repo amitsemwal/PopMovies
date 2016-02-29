@@ -22,6 +22,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.semwal.amit.bioscope.models.Movie;
+
 import java.util.ArrayList;
 
 public class DatabaseWrapper {// extends AsyncTask<String, Void, String[]> {
@@ -78,7 +80,7 @@ public class DatabaseWrapper {// extends AsyncTask<String, Void, String[]> {
 
     }
 
-    public long addMovie(int id, String title, String image, String image2, String overview, double rating, String date, double popularity, int vote_count) {
+    public long addMovie(long id, String title, String image, String image2, String overview, double rating, String date, double popularity, long vote_count) {
         long movieId;
         if (movieIdExistsInFav(id)) {
             movieId = id;
