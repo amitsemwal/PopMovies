@@ -22,6 +22,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class DatabaseWrapper {// extends AsyncTask<String, Void, String[]> {
 
     private final String TAG = DatabaseWrapper.class.getSimpleName();
@@ -51,6 +53,29 @@ public class DatabaseWrapper {// extends AsyncTask<String, Void, String[]> {
             movieCursor.close();
             return false;
         }
+    }
+
+    public ArrayList<Movie> getAllMoviesFromDb() {
+        Cursor mCursor = mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, null, null, null, null);
+        ArrayList<Movie> moviesList = new ArrayList<>();
+        if (mCursor == null) {
+            return null;
+        }
+        while (mCursor.moveToNext()) {
+            int id = mCursor.getInt(0);//id of movie
+            String title = mCursor.getString(1); // original_title
+            String poster = mCursor.getString(3); // poster_path
+            String background = mCursor.getString(4); // backdrop_path
+            String overview = mCursor.getString(2); // overview
+            double rating = mCursor.getDouble(5); // vote_average
+            double popularity = mCursor.getDouble(7); // vote_average
+            String date = mCursor.getString(8); // release_date
+            int vote_count = mCursor.getInt(6);
+            moviesList.add(new Movie(id, title, poster, background, overview, rating, date, popularity, vote_count));
+        }
+        mCursor.close();
+        return moviesList;
+
     }
 
     public long addMovie(int id, String title, String image, String image2, String overview, double rating, String date, double popularity, int vote_count) {

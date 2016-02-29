@@ -1,10 +1,12 @@
 package com.semwal.amit.bioscope.network;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.semwal.amit.bioscope.BuildConfig;
+import com.semwal.amit.bioscope.data.DatabaseWrapper;
 import com.semwal.amit.bioscope.data.Movie;
 import com.semwal.amit.bioscope.utils.Constants;
 
@@ -27,9 +29,12 @@ public class FetchAsyncTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
     private final String TAG = FetchAsyncTask.class.getSimpleName();
     public AsyncResponse delegate = null;
+    DatabaseWrapper databaseWrapper;
+    Context mContext;
 
-    public FetchAsyncTask(AsyncResponse delegate) {
+    public FetchAsyncTask(AsyncResponse delegate, Context context) {
         this.delegate = delegate;
+        mContext = context;
     }
 
     private ArrayList<Movie> getMoviesDataFromJson(String jsonStr) throws JSONException {
@@ -65,13 +70,17 @@ public class FetchAsyncTask extends AsyncTask<String, Void, ArrayList<Movie>> {
         BufferedReader reader = null;
         String movieJsonStr = null;
 
-        String MOVIEDB_API_KEY = BuildConfig.MOVIEDB_API_KEY;
+        if (params[0].equals(Constants.LocalKeys.FAVOURITES)) {
+            databaseWrapper = new DatabaseWrapper(mContext);
+            return databaseWrapper.getAllMoviesFromDb();
+        }
         try {
-            Uri builtUri = Uri.parse(Constants.Api.BASE_URL).buildUpon()
-                    .appendQueryParameter(Constants.Api.SORT_KEY_PARAM, params[0])
-                    .appendQueryParameter(Constants.Api.API_KEY_PARAM, MOVIEDB_API_KEY)
-                    .build();
 
+            Uri builtUri = Uri.parse(Constants.Api.BASE_URL).buildUpon()
+                    .appendPath(params[0])
+                    .appendQueryParameter(Constants.Api.API_KEY_PARAM, BuildConfig.MOVIEDB_API_KEY)
+                    .build();
+            Log.d(TAG, "doInBackground: URI " + builtUri.toString());
             URL url = new URL(builtUri.toString());
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");

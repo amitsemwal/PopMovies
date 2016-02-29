@@ -42,17 +42,19 @@ public class Constants {
 
         public static final String IMAGE_URL_HIGH_QUALITY = "http://image.tmdb.org/t/p/w342";
         public static final String IMAGE_URL_LOW_QUALITY = "http://image.tmdb.org/t/p/w185";
-        public static final String BASE_URL = "http://api.themoviedb.org/3/discover/movie";
+        public static final String BASE_URL = "http://api.themoviedb.org/3/movie";
         public static final String SORT_KEY_PARAM = "sort_by";
         public static final String API_KEY_PARAM = "api_key";
+
     }
 
     public class LocalKeys {
 
         public static final String DETAIL_MOVIE_KEY = "MOVIE";
-        public static final String SORT_SETTING_KEY = "sort_setting";
-        public static final String SORT_POPULARITY_DESC = "popularity.desc";
-        public static final String SORT_VOTE_AVERAGE_DESC = "vote_average.desc";
+        public static final String VIEW_MODE_KEY = "view_mode";
+        public static final String MOST_POPULAR = "popular";
+        public static final String HIGHEST_RATED = "top_rated";
+        public static final String FAVOURITES = "favourites";
         public static final String HASHTAG = "  #Bioscope by AmitSemwal";
     }
 

@@ -3,7 +3,6 @@ package com.semwal.amit.bioscope.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,13 +28,15 @@ import butterknife.ButterKnife;
  * A placeholder fragment containing a simple view.
  */
 public class AllPostersFragment extends Fragment {
-    public static final String MOVIES_KEY = "moviesARRAYLIST";
+
     @Bind(R.id.gridview_movies)
     GridView mGridView;
     private MovieDataAdapter dataAdapter;
-    private ArrayList<Movie> movies;
+    private ArrayList<Movie> PopularMovies;
+    private ArrayList<Movie> TopRatedMovies;
+    private ArrayList<Movie> FavoritesMovies;
     private String TAG = AllPostersFragment.class.getSimpleName();
-    private String mSortBy = Constants.LocalKeys.SORT_POPULARITY_DESC;
+    private String mode = Constants.LocalKeys.MOST_POPULAR;
 
     public AllPostersFragment() {
     }
@@ -47,11 +48,25 @@ public class AllPostersFragment extends Fragment {
 
         ButterKnife.bind(this, view);
         dataAdapter = new MovieDataAdapter(getActivity());
-        if (savedInstanceState != null && savedInstanceState.containsKey(MOVIES_KEY)) {
-            mSortBy = savedInstanceState.getString(Constants.LocalKeys.SORT_SETTING_KEY);
-            movies = savedInstanceState.getParcelableArrayList(MOVIES_KEY);
+        if (savedInstanceState != null && savedInstanceState.containsKey(mode)) {
+            mode = savedInstanceState.getString(Constants.LocalKeys.VIEW_MODE_KEY);
+            switch (mode) {
+                case Constants.LocalKeys.HIGHEST_RATED: {
+                    TopRatedMovies = savedInstanceState.getParcelableArrayList(mode);
+                    break;
+                }
+                case Constants.LocalKeys.FAVOURITES: {
+                    FavoritesMovies = savedInstanceState.getParcelableArrayList(mode);
+                    break;
+                }
+                case Constants.LocalKeys.MOST_POPULAR: {
+                    PopularMovies = savedInstanceState.getParcelableArrayList(mode);
+                    break;
+                }
+            }
+
         }
-        updateMovies(mSortBy);
+        updateMovies(mode);
         mGridView.setAdapter(dataAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -67,36 +82,81 @@ public class AllPostersFragment extends Fragment {
         return view;
     }
 
-    private void updateMovies(String sort_by) {
-        if (movies != null && dataAdapter != null) {
-            dataAdapter.clear();
-            dataAdapter.addAll(movies);
-            return;
-        }
-        FetchAsyncTask moviesTask = new FetchAsyncTask(new FetchAsyncTask.AsyncResponse() {
-            @Override
-            public void processFinish(ArrayList<Movie> output) {
-                Log.i(TAG, "processFinish: s");
-                if (output != null && dataAdapter != null) {
-                    dataAdapter.clear();
-                    movies = new ArrayList<>();
-                    movies.addAll(output);
-                    dataAdapter.addAll(movies);
-                }
+    private void updateMovies(String mode) {
+        dataAdapter.clear();
+        switch (this.mode) {
+            case Constants.LocalKeys.HIGHEST_RATED: {
+                if (TopRatedMovies == null) {
+                    FetchAsyncTask moviesTask = new FetchAsyncTask(new FetchAsyncTask.AsyncResponse() {
+                        @Override
+                        public void processFinish(ArrayList<Movie> output) {
+                            TopRatedMovies = new ArrayList<>();
+                            TopRatedMovies.addAll(output);
+                            dataAdapter.addAll(output);
+
+                        }
+                    }, getContext());
+                    moviesTask.execute(mode);
+                } else dataAdapter.addAll(TopRatedMovies);
+                break;
             }
-        });
-        moviesTask.execute(sort_by);
+            case Constants.LocalKeys.FAVOURITES: {
+                if (FavoritesMovies == null) {
+                    FetchAsyncTask moviesTask = new FetchAsyncTask(new FetchAsyncTask.AsyncResponse() {
+                        @Override
+                        public void processFinish(ArrayList<Movie> output) {
+                            FavoritesMovies = new ArrayList<>();
+                            FavoritesMovies.addAll(output);
+                            dataAdapter.addAll(output);
+
+                        }
+                    }, getContext());
+                    moviesTask.execute(mode);
+                } else dataAdapter.addAll(FavoritesMovies);
+                break;
+            }
+            case Constants.LocalKeys.MOST_POPULAR: {
+                if (PopularMovies == null) {
+                    FetchAsyncTask moviesTask = new FetchAsyncTask(new FetchAsyncTask.AsyncResponse() {
+                        @Override
+                        public void processFinish(ArrayList<Movie> output) {
+                            PopularMovies = new ArrayList<>();
+                            PopularMovies.addAll(output);
+                            dataAdapter.addAll(output);
+
+                        }
+                    }, getContext());
+                    moviesTask.execute(mode);
+                } else dataAdapter.addAll(PopularMovies);
+                break;
+            }
+        }
+
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (movies != null) {
-            outState.putParcelableArrayList(MOVIES_KEY, movies);
-
-            outState.putString(Constants.LocalKeys.SORT_SETTING_KEY, mSortBy);
+        switch (mode) {
+            case Constants.LocalKeys.HIGHEST_RATED: {
+                if (TopRatedMovies != null)
+                    outState.putParcelableArrayList(mode, TopRatedMovies);
+                break;
+            }
+            case Constants.LocalKeys.FAVOURITES: {
+                if (FavoritesMovies != null)
+                    outState.putParcelableArrayList(mode, FavoritesMovies);
+                break;
+            }
+            case Constants.LocalKeys.MOST_POPULAR: {
+                if (PopularMovies != null)
+                    outState.putParcelableArrayList(mode, PopularMovies);
+                break;
+            }
+        }
+        outState.putString(Constants.LocalKeys.VIEW_MODE_KEY, mode);
             super.onSaveInstanceState(outState);
 
-        }
+
     }
 
     @Override
@@ -108,14 +168,19 @@ public class AllPostersFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_main, menu);
-        MenuItem action_sort_by_popularity = menu.findItem(R.id.action_sort_by_popularity);
-        MenuItem action_sort_by_rating = menu.findItem(R.id.action_sort_by_rating);
-        if (mSortBy.contentEquals(Constants.LocalKeys.SORT_POPULARITY_DESC)) {
-            if (!action_sort_by_popularity.isChecked())
-                action_sort_by_popularity.setChecked(true);
+        MenuItem viewMostPopularMenuItem = menu.findItem(R.id.action_view_most_popular);
+        MenuItem viewTopRatedMenuItem = menu.findItem(R.id.action_view_highest_rated);
+        MenuItem viewFavouritesMenuItem = menu.findItem(R.id.action_view_favourites);
+        if (mode.contentEquals(Constants.LocalKeys.MOST_POPULAR)) {
+            if (!viewMostPopularMenuItem.isChecked())
+                viewMostPopularMenuItem.setChecked(true);
         } else {
-            if (!action_sort_by_rating.isChecked())
-                action_sort_by_rating.setChecked(true);
+            if (!viewTopRatedMenuItem.isChecked())
+                viewTopRatedMenuItem.setChecked(true);
+            else {
+                if (!viewFavouritesMenuItem.isChecked())
+                    viewFavouritesMenuItem.setChecked(true);
+            }
         }
     }
 
@@ -123,23 +188,29 @@ public class AllPostersFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_sort_by_popularity:
+            case R.id.action_view_most_popular:
                 if (item.isChecked())
                     item.setChecked(false);
                 else
                     item.setChecked(true);
-                mSortBy = Constants.LocalKeys.SORT_POPULARITY_DESC;
-                movies = null;
-                updateMovies(mSortBy);
+                mode = Constants.LocalKeys.MOST_POPULAR;
+                updateMovies(mode);
                 return true;
-            case R.id.action_sort_by_rating:
+            case R.id.action_view_highest_rated:
                 if (item.isChecked())
                     item.setChecked(false);
                 else
                     item.setChecked(true);
-                mSortBy = Constants.LocalKeys.SORT_VOTE_AVERAGE_DESC;
-                movies = null;
-                updateMovies(mSortBy);
+                mode = Constants.LocalKeys.HIGHEST_RATED;
+                updateMovies(mode);
+                return true;
+            case R.id.action_view_favourites:
+                if (item.isChecked())
+                    item.setChecked(false);
+                else
+                    item.setChecked(true);
+                mode = Constants.LocalKeys.FAVOURITES;
+                updateMovies(mode);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
