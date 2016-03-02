@@ -27,7 +27,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
     static final String DATABASE_NAME = "bioscope.db";
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String TAG = MovieDbHelper.class.getSimpleName();
 
     public MovieDbHelper(Context context) {
@@ -37,8 +37,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
-                //            MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER PRIMARY KEY," +
+                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE," +
                 MovieContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +

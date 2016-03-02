@@ -52,7 +52,7 @@ public class DetailActivity extends AppCompatActivity {
 
         db = new DatabaseWrapper(this);
 
-        if (db.movieIdExistsInFav(mMovie.getId())) {
+        if (db.isFavourite(mMovie.getId())) {
             //     fav_btn.setImageDrawable(R.drawable.btn);
             // Snackbar.make(this, "Movie in favourites", Sn.setAction("Action", null).show();
 

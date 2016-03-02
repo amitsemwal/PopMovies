@@ -22,10 +22,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
-import com.semwal.amit.bioscope.models.Movie;
-
-import java.util.ArrayList;
-
 public class DatabaseWrapper {// extends AsyncTask<String, Void, String[]> {
 
     private final String TAG = DatabaseWrapper.class.getSimpleName();
@@ -36,8 +32,8 @@ public class DatabaseWrapper {// extends AsyncTask<String, Void, String[]> {
         mContext = context;
     }
 
-    public boolean movieIdExistsInFav(long id) {
-        long movieId;
+    public boolean isFavourite(long id) {
+
         Cursor movieCursor = mContext.getContentResolver().query(
                 MovieContract.MovieEntry.CONTENT_URI,
                 new String[]{MovieContract.MovieEntry.TABLE_NAME +
@@ -48,41 +44,17 @@ public class DatabaseWrapper {// extends AsyncTask<String, Void, String[]> {
                 null);
         if (movieCursor.moveToFirst()) {
             int movieIdIndex = movieCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
-            movieId = movieCursor.getLong(movieIdIndex);
             movieCursor.close();
-            return true;
+            return id == movieCursor.getLong(movieIdIndex);
         } else {
             movieCursor.close();
             return false;
         }
     }
 
-    public ArrayList<Movie> getAllMoviesFromDb() {
-        Cursor mCursor = mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, null, null, null, null);
-        ArrayList<Movie> moviesList = new ArrayList<>();
-        if (mCursor == null) {
-            return null;
-        }
-        while (mCursor.moveToNext()) {
-            int id = mCursor.getInt(0);//id of movie
-            String title = mCursor.getString(1); // original_title
-            String poster = mCursor.getString(3); // poster_path
-            String background = mCursor.getString(4); // backdrop_path
-            String overview = mCursor.getString(2); // overview
-            double rating = mCursor.getDouble(5); // vote_average
-            double popularity = mCursor.getDouble(7); // vote_average
-            String date = mCursor.getString(8); // release_date
-            int vote_count = mCursor.getInt(6);
-            moviesList.add(new Movie(id, title, poster, background, overview, rating, date, popularity, vote_count));
-        }
-        mCursor.close();
-        return moviesList;
-
-    }
-
     public long addMovie(long id, String title, String image, String image2, String overview, double rating, String date, double popularity, long vote_count) {
         long movieId;
-        if (movieIdExistsInFav(id)) {
+        if (isFavourite(id)) {
             movieId = id;
             return movieId;
         } else {
@@ -113,7 +85,7 @@ public class DatabaseWrapper {// extends AsyncTask<String, Void, String[]> {
 
     public long removeMovie(long id) {
 
-        if (movieIdExistsInFav(id)) {
+        if (isFavourite(id)) {
             final int delete = mContext.getContentResolver().delete(
                     MovieContract.MovieEntry.CONTENT_URI,
                     MovieContract.MovieEntry.TABLE_NAME +
