@@ -15,15 +15,21 @@ import android.widget.GridView;
 
 import com.semwal.amit.bioscope.R;
 import com.semwal.amit.bioscope.activities.DetailActivity;
-import com.semwal.amit.bioscope.data.MovieDataAdapter;
+import com.semwal.amit.bioscope.data.MovieAdapter;
+import com.semwal.amit.bioscope.models.ApiResult;
 import com.semwal.amit.bioscope.models.Movie;
-import com.semwal.amit.bioscope.network.FetchAsyncTask;
+import com.semwal.amit.bioscope.network.MovieClient;
+import com.semwal.amit.bioscope.network.MovieService;
 import com.semwal.amit.bioscope.utils.Constants;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -32,12 +38,14 @@ public class AllPostersFragment extends Fragment {
 
     @Bind(R.id.gridview_movies)
     GridView mGridView;
-    private MovieDataAdapter dataAdapter;
+    private MovieAdapter dataAdapter;
+    private MovieService movieService;
     private ArrayList<Movie> PopularMovies;
     private ArrayList<Movie> TopRatedMovies;
     private ArrayList<Movie> FavoritesMovies;
     private String TAG = AllPostersFragment.class.getSimpleName();
     private String mode = Constants.LocalKeys.MOST_POPULAR;
+
 
     public AllPostersFragment() {
     }
@@ -46,11 +54,9 @@ public class AllPostersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        Log.d(TAG, "onCreateView: ");
-
-
+        movieService = MovieClient.createService(MovieService.class);
         ButterKnife.bind(this, view);
-        dataAdapter = new MovieDataAdapter(getActivity());
+        dataAdapter = new MovieAdapter(getActivity());
         onViewStateRestored(savedInstanceState);
         updateMovies(mode);
         mGridView.setAdapter(dataAdapter);
@@ -69,56 +75,25 @@ public class AllPostersFragment extends Fragment {
     }
 
     private void updateMovies(String mode) {
-        dataAdapter.clear();
-        switch (this.mode) {
-            case Constants.LocalKeys.HIGHEST_RATED: {
-                if (TopRatedMovies == null) {
-                    FetchAsyncTask moviesTask = new FetchAsyncTask(new FetchAsyncTask.AsyncResponse() {
-                        @Override
-                        public void processFinish(ArrayList<Movie> output) {
-                            TopRatedMovies = new ArrayList<>();
-                            TopRatedMovies.addAll(output);
-                            dataAdapter.addAll(output);
-
-                        }
-                    }, getContext());
-                    moviesTask.execute(mode);
-                } else dataAdapter.addAll(TopRatedMovies);
-                break;
+        Call<ApiResult<Movie>> moviesCall = movieService.getMovies(mode);
+        moviesCall.enqueue(new Callback<ApiResult<Movie>>() {
+            @Override
+            public void onResponse(Call<ApiResult<Movie>> call, Response<ApiResult<Movie>> response) {
+                List<Movie> movieList = response.body().getResults();
+                dataAdapter.clear();
+                for (Movie m : movieList) {
+                    dataAdapter.add(m);
+                }
             }
-            case Constants.LocalKeys.FAVOURITES: {
-                if (FavoritesMovies == null) {
-                    FetchAsyncTask moviesTask = new FetchAsyncTask(new FetchAsyncTask.AsyncResponse() {
-                        @Override
-                        public void processFinish(ArrayList<Movie> output) {
-                            FavoritesMovies = new ArrayList<>();
-                            FavoritesMovies.addAll(output);
-                            dataAdapter.addAll(output);
 
-                        }
-                    }, getContext());
-                    moviesTask.execute(mode);
-                } else dataAdapter.addAll(FavoritesMovies);
-                break;
+            @Override
+            public void onFailure(Call<ApiResult<Movie>> call, Throwable t) {
+                Log.d(TAG, "onFailure: ");
             }
-            case Constants.LocalKeys.MOST_POPULAR: {
-                if (PopularMovies == null) {
-                    FetchAsyncTask moviesTask = new FetchAsyncTask(new FetchAsyncTask.AsyncResponse() {
-                        @Override
-                        public void processFinish(ArrayList<Movie> output) {
-                            PopularMovies = new ArrayList<>();
-                            PopularMovies.addAll(output);
-                            dataAdapter.addAll(output);
-
-                        }
-                    }, getContext());
-                    moviesTask.execute(mode);
-                } else dataAdapter.addAll(PopularMovies);
-                break;
-            }
-        }
-
+        });
     }
+
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

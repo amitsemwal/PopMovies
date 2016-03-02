@@ -1,6 +1,7 @@
 package com.semwal.amit.bioscope.fragments;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -13,19 +14,33 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.semwal.amit.bioscope.R;
+import com.semwal.amit.bioscope.data.ReviewAdapter;
+import com.semwal.amit.bioscope.data.TrailerAdapter;
+import com.semwal.amit.bioscope.models.ApiResult;
 import com.semwal.amit.bioscope.models.Movie;
+import com.semwal.amit.bioscope.models.Review;
+import com.semwal.amit.bioscope.models.Trailer;
+import com.semwal.amit.bioscope.network.MovieClient;
+import com.semwal.amit.bioscope.network.MovieService;
 import com.semwal.amit.bioscope.utils.Constants;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -45,6 +60,13 @@ public class DetailsFragment extends Fragment {
     TextView mVoteAverageView;
     private Movie mMovie;
     private String shareString;
+
+    private ReviewAdapter reviewAdapter;
+
+    private TrailerAdapter trailerAdapter;
+
+    private MovieService movieService;
+
     public DetailsFragment() {
         setHasOptionsMenu(true);
     }
@@ -67,13 +89,10 @@ public class DetailsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
         String image_url = Constants.Api.IMAGE_URL_HIGH_QUALITY + mMovie.getBackground();
-        Picasso.with(getContext()).load(image_url).into(mImageView);
-
+        Picasso.with(getContext()).load(image_url).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(mImageView);
         mTitleView.setText(mMovie.getTitle());
         mOverviewView.setText(mMovie.getOverview());
-
         String movie_date = mMovie.getDate();
-
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try {
             String date = DateUtils.formatDateTime(getActivity(),
@@ -84,6 +103,35 @@ public class DetailsFragment extends Fragment {
         }
 
         mVoteAverageView.setText(Double.toString(mMovie.getRating()) + "(" + Long.toString(mMovie.getVote_count()) + " Votes )");
+
+        final List<Review> reviews = new ArrayList<>();
+        final List<Trailer> trailers = new ArrayList<>();
+
+        reviewAdapter = new ReviewAdapter(getActivity(), reviews);
+        trailerAdapter = new TrailerAdapter(getActivity(), trailers);
+
+        ListView reviewList = (ListView) rootView.findViewById(R.id.review_list);
+        reviewList.setAdapter(reviewAdapter);
+
+        ListView trailerList = (ListView) rootView.findViewById(R.id.trailer_list);
+        trailerList.setAdapter(trailerAdapter);
+
+        trailerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String youtubeVideoId = trailers.get(position).getKey();
+                String videoURI = "vnd.youtube:" + youtubeVideoId;
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(videoURI));
+                startActivity(i);
+            }
+        });
+
+        movieService = MovieClient.createService(MovieService.class);
+
+        fetchReviews();
+        fetchTrailers();
+
+
 
         return rootView;
     }
@@ -111,11 +159,69 @@ public class DetailsFragment extends Fragment {
 
     private Intent createShareForecastIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        Intent intent = shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT,
-                shareString + Constants.LocalKeys.HASHTAG);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareString + Constants.LocalKeys.HASHTAG);
         return shareIntent;
     }
 
+//
+//    private void updateMovies(String mode) {
+//        Call<ApiResult<Movie>> moviesCall = movieService.getMovies(mode);
+//        moviesCall.enqueue(new Callback<ApiResult<Movie>>() {
+//            @Override
+//            public void onResponse(Call<ApiResult<Movie>> call, Response<ApiResult<Movie>> response) {
+//                List<Movie> movieList = response.body().getResults();
+//                dataAdapter.clear();
+//                for (Movie m : movieList) {
+//                    dataAdapter.add(m);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ApiResult<Movie>> call, Throwable t) {
+//                Log.d(TAG, "onFailure: ");
+//            }
+//        });
+//    }
+
+    private void fetchReviews() {
+        Call<ApiResult<Review>> reviewCall = movieService.getReviews(mMovie.getId());
+        reviewCall.enqueue(new Callback<ApiResult<Review>>() {
+            @Override
+            public void onResponse(Call<ApiResult<Review>> call, Response<ApiResult<Review>> response) {
+                Log.d(TAG, "onResponse: " + response.isSuccess());
+
+                List<Review> reviewList = response.body().getResults();
+                reviewAdapter.clear();
+                for (Review r : reviewList) {
+                    reviewAdapter.add(r);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResult<Review>> call, Throwable t) {
+                Log.d(TAG, "onFailure: ");
+            }
+        });
+    }
+
+    private void fetchTrailers() {
+        Call<ApiResult<Trailer>> trailerCall = movieService.getTrailers(mMovie.getId());
+        trailerCall.enqueue(new Callback<ApiResult<Trailer>>() {
+            @Override
+            public void onResponse(Call<ApiResult<Trailer>> call, Response<ApiResult<Trailer>> response) {
+                List<Trailer> trailerList = response.body().getResults();
+                trailerAdapter.clear();
+                for (Trailer r : trailerList) {
+                    trailerAdapter.add(r);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResult<Trailer>> call, Throwable t) {
+                Log.d(TAG, "onFailure: ");
+            }
+        });
+    }
 }

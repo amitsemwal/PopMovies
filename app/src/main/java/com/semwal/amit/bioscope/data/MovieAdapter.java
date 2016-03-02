@@ -20,11 +20,11 @@ import butterknife.ButterKnife;
 /**
  * Created by Amit on 18-Feb-16.
  */
-public class MovieDataAdapter extends ArrayAdapter<Movie> {
-    public MovieDataAdapter(Context context, List<Movie> movieDataList) {
+public class MovieAdapter extends ArrayAdapter<Movie> {
+    public MovieAdapter(Context context, List<Movie> movieDataList) {
         super(context, 0, movieDataList);
     }
-    public MovieDataAdapter(Context context) {
+    public MovieAdapter(Context context) {
         super(context, 0);
     }
 

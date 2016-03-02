@@ -1,5 +1,7 @@
 package com.semwal.amit.bioscope.utils;
 
+import com.semwal.amit.bioscope.BuildConfig;
+
 /**
  * Created by Amit on 21-Feb-16.
  */
@@ -42,9 +44,10 @@ public class Constants {
 
         public static final String IMAGE_URL_HIGH_QUALITY = "http://image.tmdb.org/t/p/w342";
         public static final String IMAGE_URL_LOW_QUALITY = "http://image.tmdb.org/t/p/w185";
-        public static final String BASE_URL = "http://api.themoviedb.org/3/movie";
+        public static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
         public static final String SORT_KEY_PARAM = "sort_by";
-        public static final String API_KEY_PARAM = "api_key";
+        public static final String API_KEY_PARAM = "?api_key=" + BuildConfig.MOVIEDB_API_KEY;
+
 
     }
 
