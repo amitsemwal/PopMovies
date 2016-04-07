@@ -24,6 +24,7 @@ public class DetailActivity extends AppCompatActivity {
     DatabaseWrapper db;
     boolean fav;
     private Movie mMovie;
+    private String mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +40,12 @@ public class DetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
             mMovie = getIntent().getParcelableExtra(Constants.LocalKeys.DETAIL_MOVIE_KEY);
+            mode =  getIntent().getStringExtra(Constants.Api.SORT_KEY_PARAM);
             arguments.putParcelable(Constants.LocalKeys.DETAIL_MOVIE_KEY,
                     mMovie);
-
+            arguments.putString(Constants.Api.SORT_KEY_PARAM,mode);
             DetailsFragment fragment = new DetailsFragment();
+
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()

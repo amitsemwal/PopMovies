@@ -73,7 +73,7 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
         return view;
     }
 
-    private void updateMovies(String mode) {
+    public void updateMovies(final String mode) {
         if (mode == Constants.LocalKeys.FAVOURITES) {
             mGridView.setAdapter(mFavouriteAdapter);
             mGridView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
@@ -93,9 +93,8 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
                         String date = mCursor.getString(9); // release_date
                         int vote_count = mCursor.getInt(7);
                         Movie movie = new Movie(id, title, poster, background, overview, rating, date, popularity, vote_count);
-                        Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra(Constants.LocalKeys.DETAIL_MOVIE_KEY, movie);
-                        startActivity(intent);
-
+                        ((Communication) getActivity())
+                                .onItemSelected(mode,movie);
                     }
                 }
 
@@ -107,8 +106,9 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Movie movie = mMovieAdapter.getItem(position);
-                    Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra(Constants.LocalKeys.DETAIL_MOVIE_KEY, movie);
-                    startActivity(intent);
+                  //  Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra(Constants.LocalKeys.DETAIL_MOVIE_KEY, movie);
+                    ((Communication) getActivity())
+                            .onItemSelected(mode,movie);
                 }
             });
 
@@ -155,49 +155,6 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
-        MenuItem viewMostPopularMenuItem = menu.findItem(R.id.action_view_most_popular);
-        MenuItem viewTopRatedMenuItem = menu.findItem(R.id.action_view_highest_rated);
-        MenuItem viewFavouritesMenuItem = menu.findItem(R.id.action_view_favourites);
-        if (mode.contentEquals(Constants.LocalKeys.MOST_POPULAR)) {
-            if (!viewMostPopularMenuItem.isChecked()) viewMostPopularMenuItem.setChecked(true);
-        } else if (mode.contentEquals(Constants.LocalKeys.HIGHEST_RATED)) {
-            if (!viewTopRatedMenuItem.isChecked()) viewTopRatedMenuItem.setChecked(true);
-            else {
-                if (!viewFavouritesMenuItem.isChecked()) viewFavouritesMenuItem.setChecked(true);
-            }
-            }
-        }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.action_view_most_popular:
-                if (item.isChecked()) item.setChecked(false);
-                else item.setChecked(true);
-                mode = Constants.LocalKeys.MOST_POPULAR;
-                updateMovies(mode);
-                return true;
-            case R.id.action_view_highest_rated:
-                if (item.isChecked()) item.setChecked(false);
-                else item.setChecked(true);
-                mode = Constants.LocalKeys.HIGHEST_RATED;
-                updateMovies(mode);
-                return true;
-            case R.id.action_view_favourites:
-                if (item.isChecked()) item.setChecked(false);
-                else item.setChecked(true);
-                mode = Constants.LocalKeys.FAVOURITES;
-                updateMovies(mode);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        }
-
-    @Override
     public Loader onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(), MovieContract.MovieEntry.CONTENT_URI, null, null, null, null);
     }
@@ -211,4 +168,13 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
     public void onLoaderReset(Loader<Cursor> loader) {
         mFavouriteAdapter.swapCursor(null);
     }
+
+    public interface Communication {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(String mode, Movie movie);
+    }
+
+
 }

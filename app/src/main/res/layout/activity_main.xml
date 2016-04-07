@@ -16,7 +16,13 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-
-    <include layout="@layout/content_main" />
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/movies_fragment"
+        android:name="com.semwal.amit.bioscope.fragments.AllPostersFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        tools:layout="@layout/fragment_main" />
 
 </android.support.design.widget.CoordinatorLayout>

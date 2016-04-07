@@ -59,6 +59,7 @@ public class DetailsFragment extends Fragment {
     @Bind(R.id.detail_vote_average)
     TextView mVoteAverageView;
     private Movie mMovie;
+    private String mode;
     private String shareString;
 
     private ReviewAdapter reviewAdapter;
@@ -83,55 +84,58 @@ public class DetailsFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             mMovie = arguments.getParcelable(Constants.LocalKeys.DETAIL_MOVIE_KEY);
+            mode = arguments.getString(Constants.Api.SORT_KEY_PARAM);
             shareString = "Checkout this exciting movie. " + mMovie.getTitle();
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
-        String image_url = Constants.Api.IMAGE_URL_HIGH_QUALITY + mMovie.getBackground();
-        Picasso.with(getContext()).load(image_url).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(mImageView);
-        mTitleView.setText(mMovie.getTitle());
-        mOverviewView.setText(mMovie.getOverview());
-        String movie_date = mMovie.getDate();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            String date = DateUtils.formatDateTime(getActivity(),
-                    formatter.parse(movie_date).getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
-            mDateView.setText(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        if (mMovie != null) {
 
-        mVoteAverageView.setText(Double.toString(mMovie.getRating()) + "(" + Long.toString(mMovie.getVote_count()) + " Votes )");
-
-        final List<Review> reviews = new ArrayList<>();
-        final List<Trailer> trailers = new ArrayList<>();
-
-        reviewAdapter = new ReviewAdapter(getActivity(), reviews);
-        trailerAdapter = new TrailerAdapter(getActivity(), trailers);
-
-        ListView reviewList = (ListView) rootView.findViewById(R.id.review_list);
-        reviewList.setAdapter(reviewAdapter);
-
-        ListView trailerList = (ListView) rootView.findViewById(R.id.trailer_list);
-        trailerList.setAdapter(trailerAdapter);
-
-        trailerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String youtubeVideoId = trailers.get(position).getKey();
-                String videoURI = "vnd.youtube:" + youtubeVideoId;
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(videoURI));
-                startActivity(i);
+            String image_url = Constants.Api.IMAGE_URL_HIGH_QUALITY + mMovie.getBackground();
+            Picasso.with(getContext()).load(image_url).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(mImageView);
+            mTitleView.setText(mMovie.getTitle());
+            mOverviewView.setText(mMovie.getOverview());
+            String movie_date = mMovie.getDate();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                String date = DateUtils.formatDateTime(getActivity(),
+                        formatter.parse(movie_date).getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
+                mDateView.setText(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-        });
 
-        movieService = MovieClient.createService(MovieService.class);
+            mVoteAverageView.setText(Double.toString(mMovie.getRating()) + "(" + Long.toString(mMovie.getVote_count()) + " Votes )");
 
-        fetchReviews();
-        fetchTrailers();
+            final List<Review> reviews = new ArrayList<>();
+            final List<Trailer> trailers = new ArrayList<>();
 
+            reviewAdapter = new ReviewAdapter(getActivity(), reviews);
+            trailerAdapter = new TrailerAdapter(getActivity(), trailers);
 
+            ListView reviewList = (ListView) rootView.findViewById(R.id.review_list);
+            reviewList.setAdapter(reviewAdapter);
+
+            ListView trailerList = (ListView) rootView.findViewById(R.id.trailer_list);
+            trailerList.setAdapter(trailerAdapter);
+
+            trailerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String youtubeVideoId = trailers.get(position).getKey();
+                    String videoURI = "vnd.youtube:" + youtubeVideoId;
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(videoURI));
+                    startActivity(i);
+                }
+            });
+
+            movieService = MovieClient.createService(MovieService.class);
+
+            fetchReviews();
+            fetchTrailers();
+
+        }
 
         return rootView;
     }
