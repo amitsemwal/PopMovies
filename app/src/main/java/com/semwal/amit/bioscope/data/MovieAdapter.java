@@ -1,6 +1,8 @@
 package com.semwal.amit.bioscope.data;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,44 +22,73 @@ import butterknife.ButterKnife;
 /**
  * Created by Amit on 18-Feb-16.
  */
-public class MovieAdapter extends ArrayAdapter<Movie> {
-    public MovieAdapter(Context context, List<Movie> movieDataList) {
-        super(context, 0, movieDataList);
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
+
+    public interface OnItemClickListener {
+        void onItemClick(Movie movie);
     }
-    public MovieAdapter(Context context) {
-        super(context, 0);
+    private List<Movie> movieList;
+    private  Context mContext;
+    private OnItemClickListener mlistener;
+
+    public MovieAdapter(Context context, List<Movie> movieDataList, OnItemClickListener listener) {
+        movieList = movieDataList;
+        mContext = context;
+        mlistener = listener;
+    }
+
+ @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
+
+        // Inflate the custom layout
+        View posterView = inflater.inflate(R.layout.grid_item_poster, parent, false);
+
+        // Return a new holder instance
+        ViewHolder viewHolder = new ViewHolder(posterView);
+        return viewHolder;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        ViewHolder viewHolder;
-
-        if (view == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.grid_item_poster, parent, false);
-            viewHolder = new ViewHolder(view);
-            view.setTag(viewHolder);
-        }
-
-        final Movie movie = getItem(position);
-        String image_url = Constants.Api.IMAGE_URL_LOW_QUALITY + movie.getPosterpath();
-
-        viewHolder = (ViewHolder) view.getTag();
-        Picasso.with(getContext())
-                .load(image_url)
-                .into(viewHolder.posterImage);
-
-
-        return view;
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.bind(movieList.get(position), mlistener);
     }
 
-    static class ViewHolder {
+
+
+
+    @Override
+    public int getItemCount() {
+        return movieList.size();
+    }
+
+
+
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.grid_item_image)
         ImageView posterImage;
 
         public ViewHolder(View view) {
+            super(view);
             ButterKnife.bind(this, view);
         }
+
+        public void bind(final Movie item, final MovieAdapter.OnItemClickListener listener) {
+            String image_url = Constants.Api.IMAGE_URL_LOW_QUALITY + item.getPosterpath();
+            Picasso.with(itemView.getContext())
+                    .load(image_url)
+                    .into(posterImage);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    listener.onItemClick(item);
+                }
+            });
+        }
+
+
     }
 
 }

@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,16 +42,17 @@ import retrofit2.Response;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class AllPostersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AllPostersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, MovieAdapter.OnItemClickListener {
 
     private static final int FAVOURITE_LOADER = 0;
     private final String TAG = AllPostersFragment.class.getSimpleName();
-    @Bind(R.id.gridview_movies)
-    GridView mGridView;
+    @Bind(R.id.movies_recycler_view)
+    RecyclerView mRecycleGridView;
     private MovieAdapter mMovieAdapter;
-    private MovieCursorAdapter mFavouriteAdapter;
+    //private MovieCursorAdapter mFavouriteAdapter;
     private MovieService mMovieService;
-    private ArrayList<Movie> FavoritesMovies;
+ ///   private ArrayList<Movie> FavoritesMovies;
+    private ArrayList<Movie> mMovies = new ArrayList<>();
     private String mode = Constants.LocalKeys.MOST_POPULAR;
 
     public AllPostersFragment() {
@@ -66,8 +69,9 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         mMovieService = MovieClient.createService(MovieService.class);
         ButterKnife.bind(this, view);
-        mMovieAdapter = new MovieAdapter(getActivity());
-        mFavouriteAdapter = new MovieCursorAdapter(getActivity(), null, 0);
+        mMovieAdapter = new MovieAdapter(getActivity(), mMovies,this);
+
+      //  mFavouriteAdapter = new MovieCursorAdapter(getActivity(), null, 0);
         onViewStateRestored(savedInstanceState);
         updateMovies(mode);
         return view;
@@ -75,51 +79,43 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
 
     public void updateMovies(final String mode) {
         if (mode == Constants.LocalKeys.FAVOURITES) {
-            mGridView.setAdapter(mFavouriteAdapter);
-            mGridView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                    // CursorAdapter returns a cursor at the correct position for getItem(), or null
-                    // if it cannot seek to that position.
-                    Cursor mCursor = (Cursor) adapterView.getItemAtPosition(position);
-                    if (mCursor != null) {
-                        int id = mCursor.getInt(1);//id of movie
-                        String title = mCursor.getString(2); // original_title
-                        String poster = mCursor.getString(4); // poster_path
-                        String background = mCursor.getString(5); // backdrop_path
-                        String overview = mCursor.getString(3); // overview
-                        double rating = mCursor.getDouble(6); // vote_average
-                        double popularity = mCursor.getDouble(8); // vote_average
-                        String date = mCursor.getString(9); // release_date
-                        int vote_count = mCursor.getInt(7);
-                        Movie movie = new Movie(id, title, poster, background, overview, rating, date, popularity, vote_count);
-                        ((Communication) getActivity())
-                                .onItemSelected(mode,movie);
-                    }
-                }
-
-            });
+//            mGridView.setAdapter(mFavouriteAdapter);
+//            mGridView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+//                    // CursorAdapter returns a cursor at the correct position for getItem(), or null
+//                    // if it cannot seek to that position.
+//                    Cursor mCursor = (Cursor) adapterView.getItemAtPosition(position);
+//                    if (mCursor != null) {
+//                        int id = mCursor.getInt(1);//id of movie
+//                        String title = mCursor.getString(2); // original_title
+//                        String poster = mCursor.getString(4); // poster_path
+//                        String background = mCursor.getString(5); // backdrop_path
+//                        String overview = mCursor.getString(3); // overview
+//                        double rating = mCursor.getDouble(6); // vote_average
+//                        double popularity = mCursor.getDouble(8); // vote_average
+//                        String date = mCursor.getString(9); // release_date
+//                        int vote_count = mCursor.getInt(7);
+//                        Movie movie = new Movie(id, title, poster, background, overview, rating, date, popularity, vote_count);
+//                        ((Communication) getActivity())
+//                                .onItemSelected(mode,movie);
+//                    }
+//                }
+//
+//            });
 
         } else {
-            mGridView.setAdapter(mMovieAdapter);
-            mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Movie movie = mMovieAdapter.getItem(position);
-                  //  Intent intent = new Intent(getActivity(), DetailActivity.class).putExtra(Constants.LocalKeys.DETAIL_MOVIE_KEY, movie);
-                    ((Communication) getActivity())
-                            .onItemSelected(mode,movie);
-                }
-            });
+            mRecycleGridView.setAdapter(mMovieAdapter);
+            mRecycleGridView.setLayoutManager(new GridLayoutManager(getContext(),2));
 
             Call<ApiResult<Movie>> moviesCall = mMovieService.getMovies(mode);
             moviesCall.enqueue(new Callback<ApiResult<Movie>>() {
                 @Override
                 public void onResponse(Call<ApiResult<Movie>> call, Response<ApiResult<Movie>> response) {
-                    List<Movie> movieList = response.body().getResults();
-                    mMovieAdapter.clear();
-                    for (Movie m : movieList) {
-                        mMovieAdapter.add(m);
+                    if(!mMovies.equals(response.body().getResults())) {
+                        mMovies.clear();
+                        mMovies.addAll(response.body().getResults());
+                        mMovieAdapter.notifyDataSetChanged();
                     }
                 }
 
@@ -161,12 +157,19 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mFavouriteAdapter.swapCursor(cursor);
+        //mFavouriteAdapter.swapCursor(cursor);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mFavouriteAdapter.swapCursor(null);
+     //   mFavouriteAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onItemClick(Movie movie) {
+        ((Communication) getActivity())
+                .onItemSelected(mode, movie);
+
     }
 
     public interface Communication {
