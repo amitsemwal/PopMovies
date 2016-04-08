@@ -49,8 +49,9 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
     @Bind(R.id.movies_recycler_view)
     RecyclerView mRecycleGridView;
     private MovieAdapter mMovieAdapter;
-    //private MovieCursorAdapter mFavouriteAdapter;
+    private MovieAdapter mFavouriteAdapter;
     private MovieService mMovieService;
+    private Cursor mCursor;
  ///   private ArrayList<Movie> FavoritesMovies;
     private ArrayList<Movie> mMovies = new ArrayList<>();
     private String mode = Constants.LocalKeys.MOST_POPULAR;
@@ -71,7 +72,7 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
         ButterKnife.bind(this, view);
         mMovieAdapter = new MovieAdapter(getActivity(), mMovies,this);
 
-      //  mFavouriteAdapter = new MovieCursorAdapter(getActivity(), null, 0);
+      mFavouriteAdapter = new MovieAdapter(getActivity(), mCursor, this);
         onViewStateRestored(savedInstanceState);
         updateMovies(mode);
         return view;
@@ -79,34 +80,14 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
 
     public void updateMovies(final String mode) {
         if (mode == Constants.LocalKeys.FAVOURITES) {
-//            mGridView.setAdapter(mFavouriteAdapter);
-//            mGridView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-//                    // CursorAdapter returns a cursor at the correct position for getItem(), or null
-//                    // if it cannot seek to that position.
-//                    Cursor mCursor = (Cursor) adapterView.getItemAtPosition(position);
-//                    if (mCursor != null) {
-//                        int id = mCursor.getInt(1);//id of movie
-//                        String title = mCursor.getString(2); // original_title
-//                        String poster = mCursor.getString(4); // poster_path
-//                        String background = mCursor.getString(5); // backdrop_path
-//                        String overview = mCursor.getString(3); // overview
-//                        double rating = mCursor.getDouble(6); // vote_average
-//                        double popularity = mCursor.getDouble(8); // vote_average
-//                        String date = mCursor.getString(9); // release_date
-//                        int vote_count = mCursor.getInt(7);
-//                        Movie movie = new Movie(id, title, poster, background, overview, rating, date, popularity, vote_count);
-//                        ((Communication) getActivity())
-//                                .onItemSelected(mode,movie);
-//                    }
-//                }
-//
-//            });
+            mRecycleGridView.setAdapter(mFavouriteAdapter);
+            mRecycleGridView.setLayoutManager(new GridLayoutManager(getContext(),getResources().getInteger(R.integer.movie_columns)));
+
+
 
         } else {
             mRecycleGridView.setAdapter(mMovieAdapter);
-            mRecycleGridView.setLayoutManager(new GridLayoutManager(getContext(),2));
+            mRecycleGridView.setLayoutManager(new GridLayoutManager(getContext(),getResources().getInteger(R.integer.movie_columns)));
 
             Call<ApiResult<Movie>> moviesCall = mMovieService.getMovies(mode);
             moviesCall.enqueue(new Callback<ApiResult<Movie>>() {
@@ -157,12 +138,12 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        //mFavouriteAdapter.swapCursor(cursor);
+        mFavouriteAdapter.swapCursor(cursor);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-     //   mFavouriteAdapter.swapCursor(null);
+      mFavouriteAdapter.swapCursor(null);
     }
 
     @Override

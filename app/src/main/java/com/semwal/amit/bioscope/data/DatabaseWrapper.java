@@ -44,8 +44,9 @@ public class DatabaseWrapper {// extends AsyncTask<String, Void, String[]> {
                 null);
         if (movieCursor.moveToFirst()) {
             int movieIdIndex = movieCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+            boolean resid = id==movieCursor.getLong(movieIdIndex);
             movieCursor.close();
-            return id == movieCursor.getLong(movieIdIndex);
+            return resid;
         } else {
             movieCursor.close();
             return false;
