@@ -1,0 +1,11 @@
+<resources>
+
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="grid_item_movie_width">150dp</dimen>
+    <dimen name="grid_item_movie_spacing">2dp</dimen>
+    <dimen name="grid_item_movie_height">250dp</dimen>
+    <dimen name="text_size">16sp</dimen>
+    <dimen name="text_size_heading">24sp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+</resources>
