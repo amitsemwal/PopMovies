@@ -3,6 +3,7 @@ package com.semwal.amit.bioscope.activities;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -56,11 +57,13 @@ public class DetailActivity extends AppCompatActivity {
         db = new DatabaseWrapper(this);
 
         if (db.isFavourite(mMovie.getId())) {
-            //     fav_btn.setImageDrawable(R.drawable.btn);
-            // Snackbar.make(this, "Movie in favourites", Sn.setAction("Action", null).show();
 
+            fav_btn.setImageDrawable(ContextCompat.getDrawable(this,R.drawable.fav));
             fav = true;
         }
+        else
+            fav_btn.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.unfav));
+
 
         fav_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,13 +76,11 @@ public class DetailActivity extends AppCompatActivity {
                     if (i == 1)
                         Snackbar.make(view, "Movie Removed from favourites" + id, Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
-
-                    fav_btn.setImageDrawable(android.graphics.drawable.BitmapDrawable.createFromPath("C:\\Users\\Amit\\AppData\\Local\\Android\\sdk\\platforms\\android-23\\data\\res\\drawable-xhdpi\\btn_star_big_off.png"));
-
+                    fav_btn.setImageDrawable(ContextCompat.getDrawable(view.getContext(),R.drawable.unfav));
                 } else {
                     Snackbar.make(view, mMovie.getTitle() + "added to Favourite Movie" + id, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
-                    fav_btn.setImageDrawable(android.graphics.drawable.BitmapDrawable.createFromPath("C:\\Users\\Amit\\AppData\\Local\\Android\\sdk\\platforms\\android-23\\data\\res\\drawable-xhdpi\\btn_star_big_on.png"));
+                    fav_btn.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.fav));
                 }
                 fav = !fav;
                 //fav_btn.setImageDrawable("");

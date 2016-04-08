@@ -1,6 +1,5 @@
 package com.semwal.amit.bioscope.fragments;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,19 +10,12 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
 
 import com.semwal.amit.bioscope.R;
-import com.semwal.amit.bioscope.activities.DetailActivity;
 import com.semwal.amit.bioscope.data.MovieAdapter;
 import com.semwal.amit.bioscope.data.MovieContract;
-import com.semwal.amit.bioscope.data.MovieCursorAdapter;
 import com.semwal.amit.bioscope.models.ApiResult;
 import com.semwal.amit.bioscope.models.Movie;
 import com.semwal.amit.bioscope.network.MovieClient;
@@ -31,7 +23,6 @@ import com.semwal.amit.bioscope.network.MovieService;
 import com.semwal.amit.bioscope.utils.Constants;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

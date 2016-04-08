@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.linearlistview.LinearListView;
 import com.semwal.amit.bioscope.R;
 import com.semwal.amit.bioscope.data.ReviewAdapter;
 import com.semwal.amit.bioscope.data.TrailerAdapter;
@@ -96,6 +97,7 @@ public class DetailsFragment extends Fragment {
             Picasso.with(getContext()).load(image_url).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(mImageView);
             mTitleView.setText(mMovie.getTitle());
             mOverviewView.setText(mMovie.getOverview());
+            Constants.makeTextViewResizable(mOverviewView,5,"Read more.", true);
             String movie_date = mMovie.getDate();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             try {
@@ -114,15 +116,16 @@ public class DetailsFragment extends Fragment {
             reviewAdapter = new ReviewAdapter(getActivity(), reviews);
             trailerAdapter = new TrailerAdapter(getActivity(), trailers);
 
-            ListView reviewList = (ListView) rootView.findViewById(R.id.review_list);
+            LinearListView reviewList = (LinearListView) rootView.findViewById(R.id.review_list);
             reviewList.setAdapter(reviewAdapter);
 
-            ListView trailerList = (ListView) rootView.findViewById(R.id.trailer_list);
+            LinearListView trailerList = (LinearListView) rootView.findViewById(R.id.trailer_list);
             trailerList.setAdapter(trailerAdapter);
 
-            trailerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            trailerList.setOnItemClickListener(new LinearListView.OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                public void onItemClick(LinearListView parent, View view, int position, long id) {
+
                     String youtubeVideoId = trailers.get(position).getKey();
                     String videoURI = "vnd.youtube:" + youtubeVideoId;
                     Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(videoURI));

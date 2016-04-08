@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.semwal.amit.bioscope.R;
 import com.semwal.amit.bioscope.models.Review;
+import com.semwal.amit.bioscope.utils.Constants;
 
 import java.util.List;
 
@@ -42,6 +43,10 @@ public class ReviewAdapter extends ArrayAdapter<Review> {
         viewHolder = (ViewHolder) view.getTag();
         viewHolder.author.setText(review.getAuthor());
         viewHolder.content.setText(review.getContent());
+
+  //      if(viewHolder.content != null)
+//        Constants.makeTextViewResizable(viewHolder.content, 5, "Read more.", true);
+
 
         return view;
     }
