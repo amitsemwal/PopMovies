@@ -92,6 +92,27 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     }
 
+    public Movie getFirstMovie(){
+        if (fromDB) {
+            if (mCursor != null) {
+                mCursor.moveToPosition(0);
+                int id = mCursor.getInt(1);//id of movie
+                String title = mCursor.getString(2); // original_title
+                String poster = mCursor.getString(4); // poster_path
+                String background = mCursor.getString(5); // backdrop_path
+                String overview = mCursor.getString(3); // overview
+                double rating = mCursor.getDouble(6); // vote_average
+                double popularity = mCursor.getDouble(8); // vote_average
+                String date = mCursor.getString(9); // release_date
+                int vote_count = mCursor.getInt(7);
+                return new Movie(id, title, poster, background, overview, rating, date, popularity, vote_count);
+
+            }
+        }
+        else
+            return movieList.get(0);
+        return null;
+    }
 
 
 

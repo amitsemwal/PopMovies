@@ -2,13 +2,18 @@ package com.semwal.amit.bioscope.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.semwal.amit.bioscope.R;
+import com.semwal.amit.bioscope.data.DatabaseWrapper;
 import com.semwal.amit.bioscope.fragments.AllPostersFragment;
 import com.semwal.amit.bioscope.fragments.DetailsFragment;
 import com.semwal.amit.bioscope.models.Movie;
@@ -24,9 +29,13 @@ public class MainActivity extends AppCompatActivity implements AllPostersFragmen
     @Bind(R.id.my_toolbar)
     public Toolbar myToolbar;
 
-    private boolean mTwoPane;
+    public boolean mTwoPane;
     private String mSortMode = Constants.LocalKeys.MOST_POPULAR;
-    private Movie mSelectedMovie;
+    private Movie mMovie;
+
+    FloatingActionButton fav_btn;
+    DatabaseWrapper db;
+    boolean fav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +46,30 @@ public class MainActivity extends AppCompatActivity implements AllPostersFragmen
         setSupportActionBar(myToolbar);
         if (findViewById(R.id.movie_detail_container) != null) {
           mTwoPane = true;
+            fav_btn = (FloatingActionButton) findViewById(R.id.fav_movie_button);
+
+            db = new DatabaseWrapper(this);
+             fav_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Favourite Movie", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    long id = db.addMovie(mMovie.getId(), mMovie.getTitle(), mMovie.getPosterpath(), mMovie.getBackground(), mMovie.getOverview(), mMovie.getRating(), mMovie.getDate(), mMovie.getPopularity(), mMovie.getVote_count());
+                    if (fav) {
+                        int i = (int) db.removeMovie(mMovie.getId());
+                        if (i == 1)
+                            Snackbar.make(view, "Movie Removed from favourites" + id, Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                        fav_btn.setImageDrawable(ContextCompat.getDrawable(view.getContext(),R.drawable.unfav));
+                    } else {
+                        Snackbar.make(view, mMovie.getTitle() + "added to Favourite Movie" + id, Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                        fav_btn.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.fav));
+                    }
+                    fav = !fav;
+                    //fav_btn.setImageDrawable("");
+                }
+            });
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
 
@@ -102,7 +135,19 @@ public class MainActivity extends AppCompatActivity implements AllPostersFragmen
 
     @Override
     public void onItemSelected(String mode, Movie movie) {
+        mMovie=movie;
         if (mTwoPane) {
+
+            if (db.isFavourite(mMovie.getId())) {
+
+                fav_btn.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.fav));
+                fav = true;
+            }
+            else
+                fav_btn.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.unfav));
+
+
+
             Bundle arguments = new Bundle();
             arguments.putParcelable(Constants.LocalKeys.DETAIL_MOVIE_KEY,
                     movie);

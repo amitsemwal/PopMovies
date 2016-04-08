@@ -41,6 +41,7 @@ public class DetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
             mMovie = getIntent().getParcelableExtra(Constants.LocalKeys.DETAIL_MOVIE_KEY);
+            myToolbar.setTitle((CharSequence) mMovie.getTitle());
             mode =  getIntent().getStringExtra(Constants.Api.SORT_KEY_PARAM);
             arguments.putParcelable(Constants.LocalKeys.DETAIL_MOVIE_KEY,
                     mMovie);

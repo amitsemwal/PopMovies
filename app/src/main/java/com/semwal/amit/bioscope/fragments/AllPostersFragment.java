@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.semwal.amit.bioscope.R;
+import com.semwal.amit.bioscope.activities.MainActivity;
 import com.semwal.amit.bioscope.data.MovieAdapter;
 import com.semwal.amit.bioscope.data.MovieContract;
 import com.semwal.amit.bioscope.models.ApiResult;
@@ -72,7 +73,12 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
     public void updateMovies(final String mode) {
         if (mode == Constants.LocalKeys.FAVOURITES) {
             mRecycleGridView.setAdapter(mFavouriteAdapter);
-            mRecycleGridView.setLayoutManager(new GridLayoutManager(getContext(),getResources().getInteger(R.integer.movie_columns)));
+            mRecycleGridView.setLayoutManager(new GridLayoutManager(getContext(), getResources().getInteger(R.integer.movie_columns)));
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity != null) {
+                if (mainActivity.mTwoPane)
+                    mainActivity.onItemSelected(mode,mFavouriteAdapter.getFirstMovie());
+            }
 
 
 
@@ -88,6 +94,11 @@ public class AllPostersFragment extends Fragment implements LoaderManager.Loader
                         mMovies.clear();
                         mMovies.addAll(response.body().getResults());
                         mMovieAdapter.notifyDataSetChanged();
+                        MainActivity mainActivity = (MainActivity) getActivity();
+                        if (mainActivity != null) {
+                            if(mainActivity.mTwoPane)
+                            mainActivity.onItemSelected(mode,mMovieAdapter.getFirstMovie());
+                        }
                     }
                 }
 
