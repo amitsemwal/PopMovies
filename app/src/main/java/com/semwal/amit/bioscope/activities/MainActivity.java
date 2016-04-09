@@ -58,11 +58,11 @@ public class MainActivity extends AppCompatActivity implements AllPostersFragmen
                     if (fav) {
                         int i = (int) db.removeMovie(mMovie.getId());
                         if (i == 1)
-                            Snackbar.make(view, "Movie Removed from favourites" + id, Snackbar.LENGTH_LONG)
+                            Snackbar.make(view, String.format("%s removed from favourites", mMovie.getTitle()), Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
                         fav_btn.setImageDrawable(ContextCompat.getDrawable(view.getContext(),R.drawable.unfav));
                     } else {
-                        Snackbar.make(view, mMovie.getTitle() + "added to Favourite Movie" + id, Snackbar.LENGTH_LONG)
+                        Snackbar.make(view, String.format("%s added to favourites", mMovie.getTitle()), Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                         fav_btn.setImageDrawable(ContextCompat.getDrawable(view.getContext(), R.drawable.fav));
                     }

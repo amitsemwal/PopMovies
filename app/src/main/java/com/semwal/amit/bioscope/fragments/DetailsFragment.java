@@ -108,7 +108,7 @@ public class DetailsFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            mVoteAverageView.setText(Double.toString(mMovie.getRating()) + "(" + Long.toString(mMovie.getVote_count()) + " Votes )");
+            mVoteAverageView.setText(String.format("%.2f from %d votes", mMovie.getRating(), mMovie.getVote_count()));
 
             final List<Review> reviews = new ArrayList<>();
             final List<Trailer> trailers = new ArrayList<>();
